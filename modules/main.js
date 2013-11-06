@@ -3,12 +3,14 @@ load('lib/prefs');
 
 var PREF_BASE         = 'extensions.scrollbar-like-scroller@piro.sakura.ne.jp.';
 var PREF_DEBUG        = PREF_BASE + 'debug';
-var PREF_AREA_SIZE    = PREF_BASE + 'areaSize';
+var PREF_AREA_SIZE_RIGHT  = PREF_BASE + 'areaSize.right';
+var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.button';
 var PREF_SCROLL_DELAY = PREF_BASE + 'scrollDelay';
 
 var config = require('lib/config');
 config.setDefault(PREF_DEBUG,        false);
-config.setDefault(PREF_AREA_SIZE,    48);
+config.setDefault(PREF_AREA_SIZE_RIGHT,  64);
+config.setDefault(PREF_AREA_SIZE_BOTTOM, 64);
 config.setDefault(PREF_SCROLL_DELAY, 50);
 
 Cu.import('resource://gre/modules/Services.jsm');
@@ -20,7 +22,6 @@ function parseTouchEvent(aEvent) {
 	var content = aEvent.originalTarget;
 	content = content.defaultView || content.ownerDocument.defaultView;
 	var touch = aEvent.touches.item(0);
-	var areaSize = prefs.getPref(PREF_AREA_SIZE);
 	var chromeZoom = chrome.QueryInterface(Ci.nsIInterfaceRequestor)
 						.getInterface(Ci.nsIDOMWindowUtils)
 						.screenPixelsPerCSSPixel;
@@ -33,8 +34,8 @@ function parseTouchEvent(aEvent) {
 		eventX  : Math.round(touch.clientX * contentZoom),
 		eventY  : Math.round(touch.clientY * contentZoom)
 	};
-	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= areaSize;
-	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= areaSize;
+	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= prefs.getPref(PREF_AREA_SIZE_RIGHT);
+	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= prefs.getPref(PREF_AREA_SIZE_BOTTOM);
 
 	if (prefs.getPref(PREF_DEBUG) && aEvent.type != 'touchmove')
 		chrome.NativeWindow.toast.show(aEvent.type+'\n'+
