@@ -7,8 +7,8 @@
                    em:name="Scrollbar Like Scroller"
                    em:version="0.1"
                    em:creator="YUKI &quot;Piro&quot; Hiroshi"
-                   em:description="Provides scrollbar like behavior on the right edge of the viewport."
-                   em:homepageURL=""
+                   em:description="Provides scrollbar like behavior on the right/bottom edge of the viewport."
+                   em:homepageURL="https://github.com/piroor/scrollbar-like-scroller"
                    em:bootstrap="true"
                    em:type="2">
 
@@ -18,8 +18,16 @@
     <em:localized>
       <RDF:Description em:locale="en-US"
                        em:name="Scrollbar Like Scroller"
-                       em:description="Provides scrollbar like behavior on the right edge of the viewport."
-                       em:homepageURL=""
+                       em:description="Provides scrollbar like behavior on the right/bottom edge of the viewport."
+                       em:homepageURL="https://github.com/piroor/scrollbar-like-scroller"
+                       em:creator="YUKI &quot;Piro&quot; Hiroshi">
+      </RDF:Description>
+    </em:localized>
+    <em:localized>
+      <RDF:Description em:locale="ja"
+                       em:name="スクロールバー風スクロール"
+                       em:description="ビューポートの右端・下端をなぞるとスクロールバーのようにスクロールするようにします。"
+                       em:homepageURL="https://github.com/piroor/scrollbar-like-scroller"
                        em:creator="YUKI &quot;Piro&quot; Hiroshi">
       </RDF:Description>
     </em:localized>
