@@ -5,12 +5,16 @@ var PREF_BASE             = 'extensions.scrollbar-like-scroller@piro.sakura.ne.j
 var PREF_DEBUG            = PREF_BASE + 'debug';
 var PREF_AREA_SIZE_RIGHT  = PREF_BASE + 'areaSize.right';
 var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.button';
+var PREF_PADDING_X        = PREF_BASE + 'padding.x';
+var PREF_PADDING_Y        = PREF_BASE + 'padding.y';
 var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
 
 var config = require('lib/config');
 config.setDefault(PREF_DEBUG,            false);
 config.setDefault(PREF_AREA_SIZE_RIGHT,  64);
 config.setDefault(PREF_AREA_SIZE_BOTTOM, 64);
+config.setDefault(PREF_PADDING_X,        128);
+config.setDefault(PREF_PADDING_Y,        128);
 config.setDefault(PREF_SCROLL_DELAY,     50);
 
 Cu.import('resource://gre/modules/Services.jsm');
@@ -50,10 +54,18 @@ function updateScrollPosition(aParsedTouch) {
 	var window = aParsedTouch.content;
 	var x = window.scrollX;
 	var y = window.scrollY;
-	if (aParsedTouch.bottomEdgeTouching)
-		x = (window.scrollMaxX + aParsedTouch.width) * (aParsedTouch.eventX / aParsedTouch.width);
-	if (aParsedTouch.rightEdgeTouching)
-		y = (window.scrollMaxY + aParsedTouch.height) * (aParsedTouch.eventY / aParsedTouch.height);
+	if (aParsedTouch.bottomEdgeTouching) {
+		let scrollbarWidth = aParsedTouch.width - prefs.getPref(PREF_PADDING_X);
+		let thumbPosition = aParsedTouch.eventX - (prefs.getPref(PREF_PADDING_X) / 2);
+		let maxX = window.scrollMaxX + aParsedTouch.width;
+		x = maxX * Math.min(Math.max(0, thumbPosition / scrollbarWidth), 1);
+	}
+	if (aParsedTouch.rightEdgeTouching) {
+		let scrollbarHeight = aParsedTouch.height - prefs.getPref(PREF_PADDING_Y);
+		let thumbPosition = aParsedTouch.eventY - (prefs.getPref(PREF_PADDING_Y) / 2);
+		let maxY = window.scrollMaxY + aParsedTouch.height;
+		y = maxY * Math.min(Math.max(0, thumbPosition / scrollbarHeight), 1);
+	}
 /*
 	Services.obs.notifyObservers(null, 'Gesture:Scroll', JSON.stringify({
 		x : x,
