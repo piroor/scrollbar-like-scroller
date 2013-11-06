@@ -51,9 +51,9 @@ function updateScrollPosition(aParsedTouch) {
 	var x = window.scrollX;
 	var y = window.scrollY;
 	if (aParsedTouch.bottomEdgeTouching)
-		x = window.scrollMaxX * (aParsedTouch.eventX / aParsedTouch.width);
+		x = (window.scrollMaxX + aParsedTouch.width) * (aParsedTouch.eventX / aParsedTouch.width);
 	if (aParsedTouch.rightEdgeTouching)
-		y = window.scrollMaxY * (aParsedTouch.eventY / aParsedTouch.height);
+		y = (window.scrollMaxY + aParsedTouch.height) * (aParsedTouch.eventY / aParsedTouch.height);
 /*
 	Services.obs.notifyObservers(null, 'Gesture:Scroll', JSON.stringify({
 		x : x,
