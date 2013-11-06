@@ -1,17 +1,17 @@
 load('lib/WindowManager');
 load('lib/prefs');
 
-var PREF_BASE         = 'extensions.scrollbar-like-scroller@piro.sakura.ne.jp.';
-var PREF_DEBUG        = PREF_BASE + 'debug';
+var PREF_BASE             = 'extensions.scrollbar-like-scroller@piro.sakura.ne.jp.';
+var PREF_DEBUG            = PREF_BASE + 'debug';
 var PREF_AREA_SIZE_RIGHT  = PREF_BASE + 'areaSize.right';
 var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.button';
-var PREF_SCROLL_DELAY = PREF_BASE + 'scrollDelay';
+var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
 
 var config = require('lib/config');
-config.setDefault(PREF_DEBUG,        false);
+config.setDefault(PREF_DEBUG,            false);
 config.setDefault(PREF_AREA_SIZE_RIGHT,  64);
 config.setDefault(PREF_AREA_SIZE_BOTTOM, 64);
-config.setDefault(PREF_SCROLL_DELAY, 50);
+config.setDefault(PREF_SCROLL_DELAY,     50);
 
 Cu.import('resource://gre/modules/Services.jsm');
 
