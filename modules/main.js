@@ -9,6 +9,7 @@ var PREF_BASE             = 'extensions.scrollbar-like-scroller@piro.sakura.ne.j
 var PREF_DEBUG            = PREF_BASE + 'debug';
 var PREF_AREA_SIZE_RIGHT  = PREF_BASE + 'areaSize.right';
 var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.buttom';
+var PREF_START_THRESHOLD  = PREF_BASE + 'startThreshold';
 var PREF_PADDING_X        = PREF_BASE + 'padding.x';
 var PREF_PADDING_Y        = PREF_BASE + 'padding.y';
 var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
@@ -17,6 +18,7 @@ var config = require('lib/config');
 config.setDefault(PREF_DEBUG,            false);
 config.setDefault(PREF_AREA_SIZE_RIGHT,  64);
 config.setDefault(PREF_AREA_SIZE_BOTTOM, 64);
+config.setDefault(PREF_START_THRESHOLD,  12);
 config.setDefault(PREF_PADDING_X,        128);
 config.setDefault(PREF_PADDING_Y,        128);
 config.setDefault(PREF_SCROLL_DELAY,     50);
@@ -89,7 +91,12 @@ function updateScrollPosition(aParsedTouch) {
 	}, prefs.getPref(PREF_SCROLL_DELAY));
 }
 
-var handling = false;
+var STATE_NONE     = 0;
+var STATE_READY    = 1;
+var STATE_HANDLING = 2;
+var state = STATE_NONE;
+var startX = -1;
+var startY = -1;
 
 function handleTouchStart(aEvent) {
 	if (aEvent.touches.length != 1)
@@ -97,17 +104,21 @@ function handleTouchStart(aEvent) {
 	var parsed = parseTouchEvent(aEvent);
 	if (!parsed.rightEdgeTouching && !parsed.bottomEdgeTouching)
 		return;
-	handling = true;
+	state = STATE_READY;
+	startX = parsed.eventX;
+	startY = parsed.eventY;
 }
 
 function handleTouchEnd(aEvent) {
-	if (!handling)
+	if (state == STATE_NONE)
 		return;
 	if (aEvent.touches.length != 1) {
-		handling = false;
+		state = STATE_NONE;
 		return;
 	}
-	handling = false;
+	state = STATE_NONE;
+	startX = -1;
+	startY = -1;
 	var parsed = parseTouchEvent(aEvent);
 	updateScrollPosition(parsed);
 	aEvent.stopPropagation();
@@ -115,13 +126,21 @@ function handleTouchEnd(aEvent) {
 }
 
 function handleTouchMove(aEvent) {
-	if (!handling)
+	if (state == STATE_NONE)
 		return;
 	if (aEvent.touches.length != 1) {
-		handling = false;
+		state = STATE_NONE;
 		return;
 	}
 	var parsed = parseTouchEvent(aEvent);
+	if (state == STATE_READY) {
+		let threshold = prefs.getPref(PREF_START_THRESHOLD);
+		let movedOnXAxis = parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
+		let movedOnYAxis = parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
+		if (!movedOnXAxis && !movedOnYAxis)
+			return;
+		state = STATE_HANDLING;
+	}
 	updateScrollPosition(parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
