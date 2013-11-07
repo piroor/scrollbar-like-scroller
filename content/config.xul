@@ -13,4 +13,7 @@
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.bottom"
 		type="integer"
 		title="&config.areaSize.bottom.label;"/>
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.debug"
+		type="bool"
+		title="&config.debug.label;"/>
 </vbox>

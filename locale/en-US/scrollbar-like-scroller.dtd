@@ -5,3 +5,5 @@
 <!ENTITY config.areaSize.description  "CAUTION: Be careful! Too large value will break regular scroll behavior.">
 <!ENTITY config.areaSize.right.label  "Right">
 <!ENTITY config.areaSize.bottom.label "Bottom">
+
+<!ENTITY config.debug.label "Debug mode">
