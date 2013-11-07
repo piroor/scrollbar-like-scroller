@@ -29,7 +29,9 @@ function parseTouchEvent(aEvent) {
 	var chrome = WindowManager.getWindow(TYPE_BROWSER);
 	var content = aEvent.originalTarget;
 	content = content.defaultView || content.ownerDocument.defaultView;
-	var touch = aEvent.touches.item(0);
+	var touch = aEvent.touches[0];
+	if (!touch)
+		throw new Error('there is no touch!');
 	var chromeZoom = chrome.QueryInterface(Ci.nsIInterfaceRequestor)
 						.getInterface(Ci.nsIDOMWindowUtils)
 						.screenPixelsPerCSSPixel;
@@ -86,7 +88,7 @@ function updateScrollPosition(aParsedTouch) {
 var handling = false;
 
 function handleTouchStart(aEvent) {
-	if (aEvent.touches.length > 1)
+	if (aEvent.touches.length != 1)
 		return;
 	var parsed = parseTouchEvent(aEvent);
 	if (!parsed.rightEdgeTouching && !parsed.bottomEdgeTouching)
@@ -97,7 +99,7 @@ function handleTouchStart(aEvent) {
 function handleTouchEnd(aEvent) {
 	if (!handling)
 		return;
-	if (aEvent.touches.length > 1) {
+	if (aEvent.touches.length != 1) {
 		handling = false;
 		return;
 	}
@@ -111,7 +113,7 @@ function handleTouchEnd(aEvent) {
 function handleTouchMove(aEvent) {
 	if (!handling)
 		return;
-	if (aEvent.touches.length > 1) {
+	if (aEvent.touches.length != 1) {
 		handling = false;
 		return;
 	}
