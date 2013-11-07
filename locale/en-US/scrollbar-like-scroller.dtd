@@ -8,4 +8,6 @@
 
 <!ENTITY config.startThreshold.label "Treshold to start scrollbar like behavior">
 
+<!ENTITY config.cancelNativeScroll.label "Cancel native scroll">
+
 <!ENTITY config.debug.label "Debug mode">

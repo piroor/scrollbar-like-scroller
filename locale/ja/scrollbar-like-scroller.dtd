@@ -8,4 +8,6 @@
 
 <!ENTITY config.startThreshold.label "以下の距離以上ドラッグしたらスクロールバー風の操作を始める">
 
+<!ENTITY config.cancelNativeScroll.label "本来のスクロール動作をキャンセルする">
+
 <!ENTITY config.debug.label "デバッグモード">

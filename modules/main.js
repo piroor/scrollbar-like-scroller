@@ -13,6 +13,7 @@ var PREF_START_THRESHOLD  = PREF_BASE + 'startThreshold';
 var PREF_PADDING_X        = PREF_BASE + 'padding.x';
 var PREF_PADDING_Y        = PREF_BASE + 'padding.y';
 var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
+var PREF_CANCEL_NATIVE_SCROLL = PREF_BASE + 'cancelNativeScroll';
 
 var config = require('lib/config');
 config.setDefault(PREF_DEBUG,            false);
@@ -22,6 +23,7 @@ config.setDefault(PREF_START_THRESHOLD,  12);
 config.setDefault(PREF_PADDING_X,        128);
 config.setDefault(PREF_PADDING_Y,        128);
 config.setDefault(PREF_SCROLL_DELAY,     50);
+config.setDefault(PREF_CANCEL_NATIVE_SCROLL, true);
 
 Cu.import('resource://gre/modules/Services.jsm');
 
@@ -146,6 +148,17 @@ function handleTouchMove(aEvent) {
 	aEvent.preventDefault();
 }
 
+/*
+function handleScroll(aSubject, aTopic, aData) {
+	if (state != STATE_HANDLING ||
+		!prefs.getPref(PREF_CANCEL_NATIVE_SCROLL))
+		return;
+	var chrome = WindowManager.getWindow(TYPE_BROWSER);
+	if (chrome)
+		chrome.sendMessageToJava({ type : 'Panning:CancelOverride' });
+}
+*/
+
 function handleWindow(aWindow)
 {
 	var doc = aWindow.document;
@@ -160,13 +173,18 @@ function handleWindow(aWindow)
 WindowManager.getWindows(TYPE_BROWSER).forEach(handleWindow);
 WindowManager.addHandler(handleWindow);
 
+//Services.obs.addObserver(handleScroll, 'Gesture:Scroll', false);
+
 function shutdown()
 {
+//	Services.obs.removeObserver(handleScroll, 'Gesture:Scroll');
+
 	WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
 		aWindow.removeEventListener('touchstart', handleTouchStart, true);
 		aWindow.removeEventListener('touchend', handleTouchEnd, true);
 		aWindow.removeEventListener('touchmove', handleTouchMove, true);
 	});
+
 	WindowManager = undefined;
 	prefs = undefined;
 	config = undefined;
