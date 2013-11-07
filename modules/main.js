@@ -92,9 +92,6 @@ function handleTouchStart(aEvent) {
 	if (!parsed.rightEdgeTouching && !parsed.bottomEdgeTouching)
 		return;
 	handling = true;
-	updateScrollPosition(parsed);
-	aEvent.stopPropagation();
-	aEvent.preventDefault();
 }
 
 function handleTouchEnd(aEvent) {
