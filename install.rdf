@@ -9,6 +9,8 @@
                    em:creator="YUKI &quot;Piro&quot; Hiroshi"
                    em:description="Provides scrollbar like behavior on the right/bottom edge of the viewport."
                    em:homepageURL="https://github.com/piroor/scrollbar-like-scroller"
+                   em:optionsURL="chrome://scrollbar-like-scroller/content/config.xul"
+                   em:optionsType="2"
                    em:bootstrap="true"
                    em:type="2">
 

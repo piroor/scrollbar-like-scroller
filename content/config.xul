@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<!DOCTYPE vbox SYSTEM "chrome://scrollbar-like-scroller/locale/scrollbar-like-scroller.dtd">
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+	<setting type="control"
+		title="&config.areaSize.title;"/>
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.right"
+		type="integer"
+		title="&config.areaSize.right.label;"/>
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.bottom"
+		type="integer"
+		title="&config.areaSize.bottom.label;"/>
+</vbox>
