@@ -44,8 +44,12 @@ function parseTouchEvent(aEvent) {
 		eventX  : Math.round(touch.clientX * contentZoom),
 		eventY  : Math.round(touch.clientY * contentZoom)
 	};
-	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= prefs.getPref(PREF_AREA_SIZE_RIGHT);
-	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= prefs.getPref(PREF_AREA_SIZE_BOTTOM);
+	var maxXArea = viewport.width * 0.5;
+	var rightArea = Math.min(maxXArea, prefs.getPref(PREF_AREA_SIZE_RIGHT));
+	var maxYArea = viewport.width * 0.5;
+	var bottomArea = Math.min(maxYArea, prefs.getPref(PREF_AREA_SIZE_BOTTOM));
+	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= rightArea;
+	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= bottomArea;
 
 	if (prefs.getPref(PREF_DEBUG) && aEvent.type != 'touchmove')
 		chrome.NativeWindow.toast.show(aEvent.type+'\n'+
