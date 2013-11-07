@@ -57,25 +57,22 @@ function parseTouchEvent(aEvent) {
 		chrome.NativeWindow.toast.show(aEvent.type+'\n'+
 			JSON.stringify(parsed).replace(/,/g,',\n'), 'short');
 
-	parsed.chrome = chrome;
-	parsed.content = content;
-	return parsed;
+	return [chrome, content, parsed];
 }
 
-function updateScrollPosition(aParsedTouch) {
-	var window = aParsedTouch.content;
-	var x = window.scrollX;
-	var y = window.scrollY;
+function updateScrollPosition(aWindow, aParsedTouch) {
+	var x = aWindow.scrollX;
+	var y = aWindow.scrollY;
 	if (aParsedTouch.bottomEdgeTouching) {
 		let scrollbarWidth = aParsedTouch.width - prefs.getPref(PREF_PADDING_X);
 		let thumbPosition = aParsedTouch.eventX - (prefs.getPref(PREF_PADDING_X) / 2);
-		let maxX = window.scrollMaxX + aParsedTouch.width;
+		let maxX = aWindow.scrollMaxX + aParsedTouch.width;
 		x = maxX * Math.min(Math.max(0, thumbPosition / scrollbarWidth), 1);
 	}
 	if (aParsedTouch.rightEdgeTouching) {
 		let scrollbarHeight = aParsedTouch.height - prefs.getPref(PREF_PADDING_Y);
 		let thumbPosition = aParsedTouch.eventY - (prefs.getPref(PREF_PADDING_Y) / 2);
-		let maxY = window.scrollMaxY + aParsedTouch.height;
+		let maxY = aWindow.scrollMaxY + aParsedTouch.height;
 		y = maxY * Math.min(Math.max(0, thumbPosition / scrollbarHeight), 1);
 	}
 /*
@@ -84,10 +81,10 @@ function updateScrollPosition(aParsedTouch) {
 		y : y
 	}));
 */
-//	window.scrollTo(x, y);
+//	aWindow.scrollTo(x, y);
 	// set scroll position with delay, because the screen is scrolled by Firefox itself.
-	window.setTimeout(function() {
-		window.scrollTo(x, y);
+	aWindow.setTimeout(function() {
+		aWindow.scrollTo(x, y);
 	}, prefs.getPref(PREF_SCROLL_DELAY));
 }
 
@@ -101,7 +98,7 @@ var startY = -1;
 function handleTouchStart(aEvent) {
 	if (aEvent.touches.length != 1)
 		return;
-	var parsed = parseTouchEvent(aEvent);
+	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (!parsed.rightEdgeTouching && !parsed.bottomEdgeTouching)
 		return;
 	state = STATE_READY;
@@ -119,8 +116,8 @@ function handleTouchEnd(aEvent) {
 	state = STATE_NONE;
 	startX = -1;
 	startY = -1;
-	var parsed = parseTouchEvent(aEvent);
-	updateScrollPosition(parsed);
+	var [chrome, content, parsed] = parseTouchEvent(aEvent);
+	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 }
@@ -132,16 +129,19 @@ function handleTouchMove(aEvent) {
 		state = STATE_NONE;
 		return;
 	}
-	var parsed = parseTouchEvent(aEvent);
+	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (state == STATE_READY) {
 		let threshold = prefs.getPref(PREF_START_THRESHOLD);
 		let movedOnXAxis = parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
 		let movedOnYAxis = parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
 		if (!movedOnXAxis && !movedOnYAxis)
 			return;
+		if (prefs.getPref(PREF_DEBUG))
+			chrome.NativeWindow.toast.show('start scrollbar like behavior\n'+
+				JSON.stringify(parsed).replace(/,/g,',\n'), 'short');
 		state = STATE_HANDLING;
 	}
-	updateScrollPosition(parsed);
+	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 }
