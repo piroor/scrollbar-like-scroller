@@ -5,7 +5,7 @@
   <RDF:Description RDF:about="urn:mozilla:install-manifest"
                    em:id="scrollbar-like-scroller@piro.sakura.ne.jp"
                    em:name="Scrollbar Like Scroller"
-                   em:version="0.1"
+                   em:version="0.2"
                    em:creator="YUKI &quot;Piro&quot; Hiroshi"
                    em:description="Provides scrollbar like behavior on the right/bottom edge of the viewport."
                    em:homepageURL="https://github.com/piroor/scrollbar-like-scroller"
