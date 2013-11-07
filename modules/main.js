@@ -8,7 +8,7 @@ load('lib/prefs');
 var PREF_BASE             = 'extensions.scrollbar-like-scroller@piro.sakura.ne.jp.';
 var PREF_DEBUG            = PREF_BASE + 'debug';
 var PREF_AREA_SIZE_RIGHT  = PREF_BASE + 'areaSize.right';
-var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.button';
+var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.buttom';
 var PREF_PADDING_X        = PREF_BASE + 'padding.x';
 var PREF_PADDING_Y        = PREF_BASE + 'padding.y';
 var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
