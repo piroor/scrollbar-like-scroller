@@ -6,4 +6,6 @@
 <!ENTITY config.areaSize.right.label  "Right">
 <!ENTITY config.areaSize.bottom.label "Bottom">
 
+<!ENTITY config.startThreshold.label "Treshold to start scrollbar like behavior">
+
 <!ENTITY config.debug.label "Debug mode">

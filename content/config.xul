@@ -13,6 +13,11 @@
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.bottom"
 		type="integer"
 		title="&config.areaSize.bottom.label;"/>
+
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.startThreshold"
+		type="integer"
+		title="&config.startThreshold.label;"/>
+
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.debug"
 		type="bool"
 		title="&config.debug.label;"/>
