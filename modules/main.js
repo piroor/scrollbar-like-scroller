@@ -6,14 +6,14 @@ load('lib/WindowManager');
 load('lib/prefs');
 
 var myPrefs = prefs.createStore('extensions.scrollbar-like-scroller@piro.sakura.ne.jp.');
-myPrefs.define('debug',          'debug',           false);
-myPrefs.define('areaSizeRight',  'areaSize.right',  64);
-myPrefs.define('areaSizeBottom', 'areaSize.buttom', 64);
-myPrefs.define('startThreshold', 'startThreshold',  12);
-myPrefs.define('startDelay',     'startDelay',      150);
-myPrefs.define('paddingX',       'padding.x',       128);
-myPrefs.define('paddingY',       'padding.y',       128);
-myPrefs.define('scrollDelay',    'scrollDelay',     50);
+myPrefs.define('debug',          false);
+myPrefs.define('areaSizeRight',  64, 'areaSize.right');
+myPrefs.define('areaSizeBottom', 64. 'areaSize.buttom');
+myPrefs.define('startThreshold', 12);
+myPrefs.define('startDelay',     150);
+myPrefs.define('paddingX',       128, 'padding.x');
+myPrefs.define('paddingY',       128, 'padding.y');
+myPrefs.define('scrollDelay',    50);
 
 Cu.import('resource://gre/modules/Services.jsm');
 

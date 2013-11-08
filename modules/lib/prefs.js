@@ -19,6 +19,15 @@
    window['piro.sakura.ne.jp'].prefs.addPrefListener(listener);
    window['piro.sakura.ne.jp'].prefs.removePrefListener(listener);
 
+   // utility
+   var store = window['piro.sakura.ne.jp'].prefs.createStore('extensions.someextension.');
+   // property name/key, default value
+   store.define('enabled', true);
+   // property name, default value, pref key (different to the name)
+   store.define('leftMargin', true, 'margin.left');
+   var enabled = store.enabled;
+   store.destroy(); // free the memory.
+
  license: The MIT License, Copyright (c) 2009-2013 YUKI "Piro" Hiroshi
  original:
    http://github.com/piroor/fxaddonlib-prefs
@@ -229,9 +238,10 @@ if (typeof window == 'undefined' ||
 			};
 			this.addPrefListener(listener);
 			var keyToName = {};
+			var base = aDomain.replace(/\.$/, '') + '.';
 			var store = {
-				define : function(aName, aKey, aValue) {
-					aKey = aDomain + aKey;
+				define : function(aName, aValue, aKey) {
+					aKey = base + (aKey || aName);
 					window['piro.sakura.ne.jp'].prefs.setDefaultPref(aKey, aValue);
 					this[aName] = window['piro.sakura.ne.jp'].prefs.getPref(aKey);
 					keyToName[aKey] = aName;
@@ -239,6 +249,7 @@ if (typeof window == 'undefined' ||
 				destroy : function() {
 					window['piro.sakura.ne.jp'].prefs.removePrefListener(listener);
 					aDomain = undefined;
+					base = undefined;
 					listener = undefined;
 					keyToName = undefined;
 					store = undefined;
