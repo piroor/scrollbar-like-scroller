@@ -8,7 +8,7 @@ load('lib/prefs');
 var myPrefs = prefs.createStore('extensions.scrollbar-like-scroller@piro.sakura.ne.jp.');
 myPrefs.define('debug',          false);
 myPrefs.define('areaSizeRight',  64, 'areaSize.right');
-myPrefs.define('areaSizeBottom', 64. 'areaSize.buttom');
+myPrefs.define('areaSizeBottom', 64, 'areaSize.buttom');
 myPrefs.define('startThreshold', 12);
 myPrefs.define('startDelay',     150);
 myPrefs.define('paddingX',       128, 'padding.x');
