@@ -14,7 +14,6 @@ var PREF_START_DELAY      = PREF_BASE + 'startDelay';
 var PREF_PADDING_X        = PREF_BASE + 'padding.x';
 var PREF_PADDING_Y        = PREF_BASE + 'padding.y';
 var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
-var PREF_CANCEL_NATIVE_SCROLL = PREF_BASE + 'cancelNativeScroll';
 
 var config = require('lib/config');
 config.setDefault(PREF_DEBUG,            false);
@@ -25,7 +24,6 @@ config.setDefault(PREF_START_DELAY,      150);
 config.setDefault(PREF_PADDING_X,        128);
 config.setDefault(PREF_PADDING_Y,        128);
 config.setDefault(PREF_SCROLL_DELAY,     50);
-config.setDefault(PREF_CANCEL_NATIVE_SCROLL, true);
 
 Cu.import('resource://gre/modules/Services.jsm');
 

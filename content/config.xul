@@ -22,12 +22,6 @@
 		type="integer"
 		title="&config.startThreshold.label;"/>
 
-<!--
-	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.cancelNativeScroll"
-		type="bool"
-		title="&config.cancelNativeScroll.label;"/>
--->
-
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.debug"
 		type="bool"
 		title="&config.debug.label;"/>

@@ -9,6 +9,4 @@
 <!ENTITY config.startDelay.label     "以下の時間（単位：ミリ秒）以内に行われたスワイプ操作を無視する">
 <!ENTITY config.startThreshold.label "以下の距離以上ドラッグしたらスクロールバー風の操作を始める">
 
-<!ENTITY config.cancelNativeScroll.label "本来のスクロール動作をキャンセルする">
-
 <!ENTITY config.debug.label "デバッグモード">
