@@ -14,6 +14,10 @@
 		type="integer"
 		title="&config.areaSize.bottom.label;"/>
 
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.startDelay"
+		type="integer"
+		title="&config.startDelay.label;"/>
+
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.startThreshold"
 		type="integer"
 		title="&config.startThreshold.label;"/>
