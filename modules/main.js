@@ -21,7 +21,7 @@ config.setDefault(PREF_DEBUG,            false);
 config.setDefault(PREF_AREA_SIZE_RIGHT,  64);
 config.setDefault(PREF_AREA_SIZE_BOTTOM, 64);
 config.setDefault(PREF_START_THRESHOLD,  12);
-config.setDefault(PREF_START_DELAY,      100);
+config.setDefault(PREF_START_DELAY,      150);
 config.setDefault(PREF_PADDING_X,        128);
 config.setDefault(PREF_PADDING_Y,        128);
 config.setDefault(PREF_SCROLL_DELAY,     50);
