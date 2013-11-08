@@ -62,16 +62,18 @@ function parseTouchEvent(aEvent) {
 	return [chrome, content, parsed];
 }
 
+var scrollXAxis = false;
+var scrollYAxis = false;
 function updateScrollPosition(aWindow, aParsedTouch) {
 	var x = aWindow.scrollX;
 	var y = aWindow.scrollY;
-	if (aParsedTouch.bottomEdgeTouching) {
+	if (scrollXAxis) {
 		let scrollbarWidth = aParsedTouch.width - prefs.getPref(PREF_PADDING_X);
 		let thumbPosition = aParsedTouch.eventX - (prefs.getPref(PREF_PADDING_X) / 2);
 		let maxX = aWindow.scrollMaxX + aParsedTouch.width;
 		x = maxX * Math.min(Math.max(0, thumbPosition / scrollbarWidth), 1);
 	}
-	if (aParsedTouch.rightEdgeTouching) {
+	if (scrollYAxis) {
 		let scrollbarHeight = aParsedTouch.height - prefs.getPref(PREF_PADDING_Y);
 		let thumbPosition = aParsedTouch.eventY - (prefs.getPref(PREF_PADDING_Y) / 2);
 		let maxY = aWindow.scrollMaxY + aParsedTouch.height;
@@ -96,6 +98,8 @@ function handleTouchStart(aEvent) {
 	state = STATE_READY;
 	startX = parsed.eventX;
 	startY = parsed.eventY;
+	scrollXAxis = false;
+	scrollYAxis = false;
 }
 
 function handleTouchEnd(aEvent) {
@@ -108,6 +112,8 @@ function handleTouchEnd(aEvent) {
 	state = STATE_NONE;
 	startX = -1;
 	startY = -1;
+	scrollXAxis = false;
+	scrollYAxis = false;
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
@@ -124,9 +130,9 @@ function handleTouchMove(aEvent) {
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (state == STATE_READY) {
 		let threshold = prefs.getPref(PREF_START_THRESHOLD);
-		let movedOnXAxis = parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
-		let movedOnYAxis = parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
-		if (!movedOnXAxis && !movedOnYAxis)
+		scrollXAxis = parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
+		scrollYAxis = parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
+		if (!scrollXAxis && !scrollYAxis)
 			return;
 		if (prefs.getPref(PREF_DEBUG))
 			chrome.NativeWindow.toast.show('start scrollbar like behavior\n'+
