@@ -77,17 +77,7 @@ function updateScrollPosition(aWindow, aParsedTouch) {
 		let maxY = aWindow.scrollMaxY + aParsedTouch.height;
 		y = maxY * Math.min(Math.max(0, thumbPosition / scrollbarHeight), 1);
 	}
-/*
-	Services.obs.notifyObservers(null, 'Gesture:Scroll', JSON.stringify({
-		x : x,
-		y : y
-	}));
-*/
-//	aWindow.scrollTo(x, y);
-	// set scroll position with delay, because the screen is scrolled by Firefox itself.
-	aWindow.setTimeout(function() {
-		aWindow.scrollTo(x, y);
-	}, prefs.getPref(PREF_SCROLL_DELAY));
+	aWindow.scrollTo(x, y);
 }
 
 var STATE_NONE     = 0;
@@ -148,16 +138,16 @@ function handleTouchMove(aEvent) {
 	aEvent.preventDefault();
 }
 
-/*
-function handleScroll(aSubject, aTopic, aData) {
-	if (state != STATE_HANDLING ||
-		!prefs.getPref(PREF_CANCEL_NATIVE_SCROLL))
-		return;
-	var chrome = WindowManager.getWindow(TYPE_BROWSER);
-	if (chrome)
-		chrome.sendMessageToJava({ type : 'Panning:CancelOverride' });
-}
-*/
+var scrollObserver = {
+	observe: function(aSubject, aTopic, aData) {
+		if (state != STATE_HANDLING ||
+			!prefs.getPref(PREF_CANCEL_NATIVE_SCROLL))
+			return;
+		var chrome = WindowManager.getWindow(TYPE_BROWSER);
+		if (chrome)
+			chrome.sendMessageToJava({ type : 'Panning:Override' });
+	}
+};
 
 function handleWindow(aWindow)
 {
@@ -173,11 +163,11 @@ function handleWindow(aWindow)
 WindowManager.getWindows(TYPE_BROWSER).forEach(handleWindow);
 WindowManager.addHandler(handleWindow);
 
-//Services.obs.addObserver(handleScroll, 'Gesture:Scroll', false);
+Services.obs.addObserver(scrollObserver, 'Gesture:Scroll', false);
 
 function shutdown()
 {
-//	Services.obs.removeObserver(handleScroll, 'Gesture:Scroll');
+	Services.obs.removeObserver(scrollObserver, 'Gesture:Scroll');
 
 	WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
 		aWindow.removeEventListener('touchstart', handleTouchStart, true);
