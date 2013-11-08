@@ -5,25 +5,15 @@
 load('lib/WindowManager');
 load('lib/prefs');
 
-var PREF_BASE             = 'extensions.scrollbar-like-scroller@piro.sakura.ne.jp.';
-var PREF_DEBUG            = PREF_BASE + 'debug';
-var PREF_AREA_SIZE_RIGHT  = PREF_BASE + 'areaSize.right';
-var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.buttom';
-var PREF_START_THRESHOLD  = PREF_BASE + 'startThreshold';
-var PREF_START_DELAY      = PREF_BASE + 'startDelay';
-var PREF_PADDING_X        = PREF_BASE + 'padding.x';
-var PREF_PADDING_Y        = PREF_BASE + 'padding.y';
-var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
-
-var config = require('lib/config');
-config.setDefault(PREF_DEBUG,            false);
-config.setDefault(PREF_AREA_SIZE_RIGHT,  64);
-config.setDefault(PREF_AREA_SIZE_BOTTOM, 64);
-config.setDefault(PREF_START_THRESHOLD,  12);
-config.setDefault(PREF_START_DELAY,      150);
-config.setDefault(PREF_PADDING_X,        128);
-config.setDefault(PREF_PADDING_Y,        128);
-config.setDefault(PREF_SCROLL_DELAY,     50);
+var myPrefs = prefs.createStore('extensions.scrollbar-like-scroller@piro.sakura.ne.jp.');
+myPrefs.define('debug',          'debug',           false);
+myPrefs.define('areaSizeRight',  'areaSize.right',  64);
+myPrefs.define('areaSizeBottom', 'areaSize.buttom', 64);
+myPrefs.define('startThreshold', 'startThreshold',  12);
+myPrefs.define('startDelay',     'startDelay',      150);
+myPrefs.define('paddingX',       'padding.x',       128);
+myPrefs.define('paddingY',       'padding.y',       128);
+myPrefs.define('scrollDelay',    'scrollDelay',     50);
 
 Cu.import('resource://gre/modules/Services.jsm');
 
@@ -49,13 +39,13 @@ function parseTouchEvent(aEvent) {
 		eventY  : Math.round(touch.clientY * contentZoom)
 	};
 	var maxXArea = viewport.width * 0.5;
-	var rightArea = Math.min(maxXArea, prefs.getPref(PREF_AREA_SIZE_RIGHT));
+	var rightArea = Math.min(maxXArea, myPrefs.areaSizeRight);
 	var maxYArea = viewport.width * 0.5;
-	var bottomArea = Math.min(maxYArea, prefs.getPref(PREF_AREA_SIZE_BOTTOM));
+	var bottomArea = Math.min(maxYArea, myPrefs.areaSizeBottom);
 	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= rightArea;
 	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= bottomArea;
 
-	if (prefs.getPref(PREF_DEBUG) && aEvent.type != 'touchmove')
+	if (myPrefs.debug && aEvent.type != 'touchmove')
 		chrome.NativeWindow.toast.show(aEvent.type+'\n'+
 			JSON.stringify(parsed).replace(/,/g,',\n'), 'short');
 
@@ -68,14 +58,14 @@ function updateScrollPosition(aWindow, aParsedTouch) {
 	var x = aWindow.scrollX;
 	var y = aWindow.scrollY;
 	if (scrollXAxis) {
-		let scrollbarWidth = aParsedTouch.width - prefs.getPref(PREF_PADDING_X);
-		let thumbPosition = aParsedTouch.eventX - (prefs.getPref(PREF_PADDING_X) / 2);
+		let scrollbarWidth = aParsedTouch.width - myPrefs.paddingX;
+		let thumbPosition = aParsedTouch.eventX - (myPrefs.paddingX / 2);
 		let maxX = aWindow.scrollMaxX + aParsedTouch.width;
 		x = maxX * Math.min(Math.max(0, thumbPosition / scrollbarWidth), 1);
 	}
 	if (scrollYAxis) {
-		let scrollbarHeight = aParsedTouch.height - prefs.getPref(PREF_PADDING_Y);
-		let thumbPosition = aParsedTouch.eventY - (prefs.getPref(PREF_PADDING_Y) / 2);
+		let scrollbarHeight = aParsedTouch.height - myPrefs.paddingY;
+		let thumbPosition = aParsedTouch.eventY - (myPrefs.paddingY / 2);
 		let maxY = aWindow.scrollMaxY + aParsedTouch.height;
 		y = maxY * Math.min(Math.max(0, thumbPosition / scrollbarHeight), 1);
 	}
@@ -133,14 +123,14 @@ function handleTouchMove(aEvent) {
 	}
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (state == STATE_READY) {
-		if (Date.now() - startTime < prefs.getPref(PREF_START_DELAY))
+		if (Date.now() - startTime < myPrefs.startDelay)
 			return;
-		let threshold = prefs.getPref(PREF_START_THRESHOLD);
+		let threshold = myPrefs.startThreshold;
 		scrollXAxis = parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
 		scrollYAxis = parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
 		if (!scrollXAxis && !scrollYAxis)
 			return;
-		if (prefs.getPref(PREF_DEBUG))
+		if (myPrefs.debug)
 			chrome.NativeWindow.toast.show('start scrollbar like behavior\n'+
 				JSON.stringify(parsed).replace(/,/g,',\n'), 'short');
 		state = STATE_HANDLING;
@@ -174,6 +164,8 @@ function shutdown()
 	});
 
 	WindowManager = undefined;
+	myPrefs.destroy();
+	myPrefs = undefined;
 	prefs = undefined;
 	config = undefined;
 }

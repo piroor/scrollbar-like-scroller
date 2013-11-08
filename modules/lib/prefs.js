@@ -42,7 +42,7 @@ if (typeof window == 'undefined' ||
 }
 
 (function() {
-	const currentRevision = 13;
+	const currentRevision = 14;
 
 	if (!('piro.sakura.ne.jp' in window)) window['piro.sakura.ne.jp'] = {};
 
@@ -214,6 +214,37 @@ if (typeof window == 'undefined' ||
 			}
 			catch(e) {
 			}
+		},
+
+		createStore : function(aDomain)
+		{
+			var listener = {
+				domain : aDomain,
+				observe : function(aSubject, aTopic, aData) {
+					if (aTopic != 'nsPref:changed')
+						return;
+					var name = keyToName[aData];
+					store[name] = window['piro.sakura.ne.jp'].prefs.getPref(aData);
+				}
+			};
+			this.addPrefListener(listener);
+			var keyToName = {};
+			var store = {
+				define : function(aName, aKey, aValue) {
+					aKey = aDomain + aKey;
+					window['piro.sakura.ne.jp'].prefs.setDefaultPref(aKey, aValue);
+					this[aName] = window['piro.sakura.ne.jp'].prefs.getPref(aKey);
+					keyToName[aKey] = aName;
+				},
+				destroy : function() {
+					window['piro.sakura.ne.jp'].prefs.removePrefListener(listener);
+					aDomain = undefined;
+					listener = undefined;
+					keyToName = undefined;
+					store = undefined;
+				}
+			};
+			return store;
 		}
 	};
 })();
