@@ -123,6 +123,7 @@ function handleTouchEnd(aEvent) {
 	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
+	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
 }
 
 function handleTouchMove(aEvent) {
@@ -149,18 +150,8 @@ function handleTouchMove(aEvent) {
 	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
+	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
 }
-
-var scrollObserver = {
-	observe: function(aSubject, aTopic, aData) {
-		if (state != STATE_HANDLING ||
-			!prefs.getPref(PREF_CANCEL_NATIVE_SCROLL))
-			return;
-		var chrome = WindowManager.getWindow(TYPE_BROWSER);
-		if (chrome)
-			chrome.sendMessageToJava({ type : 'Panning:Override' });
-	}
-};
 
 function handleWindow(aWindow)
 {
@@ -176,12 +167,8 @@ function handleWindow(aWindow)
 WindowManager.getWindows(TYPE_BROWSER).forEach(handleWindow);
 WindowManager.addHandler(handleWindow);
 
-Services.obs.addObserver(scrollObserver, 'Gesture:Scroll', false);
-
 function shutdown()
 {
-	Services.obs.removeObserver(scrollObserver, 'Gesture:Scroll');
-
 	WindowManager.getWindows(TYPE_BROWSER).forEach(function(aWindow) {
 		aWindow.removeEventListener('touchstart', handleTouchStart, true);
 		aWindow.removeEventListener('touchend', handleTouchEnd, true);
