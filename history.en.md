@@ -1,6 +1,7 @@
 # History
 
  - master/HEAD
+ - 0.6 (2013.11.09)
    * Cancel native scroll correctly.
      (Referring [Quick Gestures](https://addons.mozilla.org/ja/android/addon/quick-gestures/), thanks to takachan!)
    * Calculate scroll position correctly.

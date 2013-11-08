@@ -1,6 +1,7 @@
 # 更新履歴
 
  - master/HEAD
+ - 0.6 (2013.11.09)
    * Firefox本来のパンスクロールを正しくキャンセルするようにした
      （[Quick Gestures](https://addons.mozilla.org/ja/android/addon/quick-gestures/)を参考にしました。takachanさん、情報提供ありがとうございます。）
    * スクロール位置をより正しく計算するようにした
