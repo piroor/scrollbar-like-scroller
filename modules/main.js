@@ -10,6 +10,7 @@ var PREF_DEBUG            = PREF_BASE + 'debug';
 var PREF_AREA_SIZE_RIGHT  = PREF_BASE + 'areaSize.right';
 var PREF_AREA_SIZE_BOTTOM = PREF_BASE + 'areaSize.buttom';
 var PREF_START_THRESHOLD  = PREF_BASE + 'startThreshold';
+var PREF_START_DELAY      = PREF_BASE + 'startDelay';
 var PREF_PADDING_X        = PREF_BASE + 'padding.x';
 var PREF_PADDING_Y        = PREF_BASE + 'padding.y';
 var PREF_SCROLL_DELAY     = PREF_BASE + 'scrollDelay';
@@ -20,6 +21,7 @@ config.setDefault(PREF_DEBUG,            false);
 config.setDefault(PREF_AREA_SIZE_RIGHT,  64);
 config.setDefault(PREF_AREA_SIZE_BOTTOM, 64);
 config.setDefault(PREF_START_THRESHOLD,  12);
+config.setDefault(PREF_START_DELAY,      100);
 config.setDefault(PREF_PADDING_X,        128);
 config.setDefault(PREF_PADDING_Y,        128);
 config.setDefault(PREF_SCROLL_DELAY,     50);
@@ -86,6 +88,7 @@ var STATE_NONE     = 0;
 var STATE_READY    = 1;
 var STATE_HANDLING = 2;
 var state = STATE_NONE;
+var startTime = -1;
 var startX = -1;
 var startY = -1;
 
@@ -98,6 +101,7 @@ function handleTouchStart(aEvent) {
 	state = STATE_READY;
 	startX = parsed.eventX;
 	startY = parsed.eventY;
+	startTime = Date.now();
 	scrollXAxis = false;
 	scrollYAxis = false;
 }
@@ -110,6 +114,7 @@ function handleTouchEnd(aEvent) {
 		return;
 	}
 	state = STATE_NONE;
+	startTime = -1;
 	startX = -1;
 	startY = -1;
 	scrollXAxis = false;
@@ -129,6 +134,8 @@ function handleTouchMove(aEvent) {
 	}
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (state == STATE_READY) {
+		if (Date.now() - startTime < prefs.getPref(PREF_START_DELAY))
+			return;
 		let threshold = prefs.getPref(PREF_START_THRESHOLD);
 		scrollXAxis = parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
 		scrollYAxis = parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
