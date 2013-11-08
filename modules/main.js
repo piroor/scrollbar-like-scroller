@@ -11,8 +11,10 @@ myPrefs.define('areaSizeRight',  64, 'areaSize.right');
 myPrefs.define('areaSizeBottom', 64, 'areaSize.buttom');
 myPrefs.define('startThreshold', 12);
 myPrefs.define('startDelay',     150);
-myPrefs.define('paddingX',       128, 'padding.x');
-myPrefs.define('paddingY',       128, 'padding.y');
+myPrefs.define('offsetX',        '0.05', 'offset.x');
+myPrefs.define('offsetMinX',     64,    'offset.minX');
+myPrefs.define('offsetY',        '0.05', 'offset.y');
+myPrefs.define('offsetMinY',     64,    'offset.minY');
 myPrefs.define('scrollDelay',    50);
 
 Cu.import('resource://gre/modules/Services.jsm');
@@ -26,15 +28,18 @@ function parseTouchEvent(aEvent) {
 	var touch = aEvent.touches[0];
 	if (!touch)
 		throw new Error('there is no touch!');
-	var chromeZoom = chrome.QueryInterface(Ci.nsIInterfaceRequestor)
-						.getInterface(Ci.nsIDOMWindowUtils)
-						.screenPixelsPerCSSPixel;
 	var viewport = chrome.BrowserApp.selectedTab.getViewport();
+	var [pageWidth, pageHeight] = chrome.BrowserApp.selectedTab.getPageSize(content.document, viewport.width, viewport.height);
 	var contentZoom = viewport.zoom;
 	var parsed = {
 		zoom    : contentZoom,
-		width   : Math.round(viewport.width),
-		height  : Math.round(viewport.height),
+		width   : viewport.width,
+		height  : viewport.height,
+		// Calculate max scroll position manually, because
+		// the page can be scrollable even if window.scrollMax* == 0
+		// when it is zoomed.
+		scrollMaxX : Math.max(0, Math.round(pageWidth - (viewport.width / contentZoom))),
+		scrollMaxY : Math.max(0, Math.round(pageHeight - (viewport.height / contentZoom))),
 		eventX  : Math.round(touch.clientX * contentZoom),
 		eventY  : Math.round(touch.clientY * contentZoom)
 	};
@@ -58,18 +63,24 @@ function updateScrollPosition(aWindow, aParsedTouch) {
 	var x = aWindow.scrollX;
 	var y = aWindow.scrollY;
 	if (scrollXAxis) {
-		let scrollbarWidth = aParsedTouch.width - myPrefs.paddingX;
-		let thumbPosition = aParsedTouch.eventX - (myPrefs.paddingX / 2);
-		let maxX = aWindow.scrollMaxX + aParsedTouch.width;
-		x = maxX * Math.min(Math.max(0, thumbPosition / scrollbarWidth), 1);
+		let maxX = aParsedTouch.scrollMaxX;
+		let offset = Math.max(aParsedTouch.width * parseFloat(myPrefs.offsetX), myPrefs.offsetMinX);
+		let position = calculateThumbPositionPercentage(offset, aParsedTouch.width, aParsedTouch.eventX);
+		x = maxX * position;
 	}
 	if (scrollYAxis) {
-		let scrollbarHeight = aParsedTouch.height - myPrefs.paddingY;
-		let thumbPosition = aParsedTouch.eventY - (myPrefs.paddingY / 2);
-		let maxY = aWindow.scrollMaxY + aParsedTouch.height;
-		y = maxY * Math.min(Math.max(0, thumbPosition / scrollbarHeight), 1);
+		let maxY = aParsedTouch.scrollMaxY;
+		let offset = Math.max(aParsedTouch.height * parseFloat(myPrefs.offsetY), myPrefs.offsetMinY);
+		let position = calculateThumbPositionPercentage(offset, aParsedTouch.height, aParsedTouch.eventY);
+		y = maxY * position;
 	}
 	aWindow.scrollTo(x, y);
+}
+
+function calculateThumbPositionPercentage(aOffset, aSize, aPosition) {
+	let scrollbarSize = aSize - (aOffset * 2);
+	let percentage = (aPosition - aOffset) / scrollbarSize;
+	return Math.min(Math.max(0, percentage), 1)
 }
 
 var STATE_NONE     = 0;
