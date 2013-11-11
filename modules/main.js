@@ -16,6 +16,10 @@ myPrefs.define('offsetMinX',     64,    'offset.minX');
 myPrefs.define('offsetY',        '0.05', 'offset.y');
 myPrefs.define('offsetMinY',     64,    'offset.minY');
 myPrefs.define('scrollDelay',    50);
+myPrefs.define('thumbEnabled',   true, 'thumb.enabled');
+myPrefs.define('thumbExpandedArea', 16, 'thumb.expandedArea');
+myPrefs.define('thumbMinWidth',  80,   'thumb.minWidth');
+myPrefs.define('thumbMinHeight', 80,   'thumb.minHeight');
 
 Cu.import('resource://gre/modules/Services.jsm');
 
@@ -30,25 +34,55 @@ function parseTouchEvent(aEvent) {
 		throw new Error('there is no touch!');
 	var viewport = chrome.BrowserApp.selectedTab.getViewport();
 	var [pageWidth, pageHeight] = chrome.BrowserApp.selectedTab.getPageSize(content.document, viewport.width, viewport.height);
-	var contentZoom = viewport.zoom;
 	var parsed = {
-		zoom    : contentZoom,
+		zoom    : viewport.zoom,
 		width   : viewport.width,
 		height  : viewport.height,
-		// Calculate max scroll position manually, because
-		// the page can be scrollable even if window.scrollMax* == 0
-		// when it is zoomed.
-		scrollMaxX : Math.max(0, Math.round(pageWidth - (viewport.width / contentZoom))),
-		scrollMaxY : Math.max(0, Math.round(pageHeight - (viewport.height / contentZoom))),
-		eventX  : Math.round(touch.clientX * contentZoom),
-		eventY  : Math.round(touch.clientY * contentZoom)
+		pageWidth  : viewport.pageRight,
+		pageHeight : viewport.pageBottom,
+		scrollX    : viewport.x,
+		scrollY    : viewport.y,
+		scrollMaxX : (viewport.pageRight - viewport.width) / viewport.zoom,
+		scrollMaxY : (viewport.pageBottom - viewport.height) / viewport.zoom,
+		eventX  : touch.clientX * viewport.zoom,
+		eventY  : touch.clientY * viewport.zoom
 	};
 	var maxXArea = viewport.width * 0.5;
-	var rightArea = Math.min(maxXArea, myPrefs.areaSizeRight);
+	parsed.rightArea = Math.min(maxXArea, myPrefs.areaSizeRight);
 	var maxYArea = viewport.width * 0.5;
-	var bottomArea = Math.min(maxYArea, myPrefs.areaSizeBottom);
-	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= rightArea;
-	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= bottomArea;
+	parsed.bottomArea = Math.min(maxYArea, myPrefs.areaSizeBottom);
+	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= parsed.rightArea;
+	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= parsed.bottomArea;
+
+	if (myPrefs.thumbEnabled) {
+		let expandedArea = myPrefs.thumbExpandedArea * viewport.zoom;
+
+		let thumbStartY = parsed.scrollY - expandedArea;
+		let thumbEndY = parsed.scrollY + parsed.height + expandedArea;
+		let thumbHeight = (thumbEndY - thumbStartY) / parsed.pageHeight * parsed.height;
+		let minHeight = myPrefs.thumbMinHeight;
+		if (thumbHeight < minHeight) {
+			let expand = (minHeight - thumbHeight) / parsed.height * parsed.pageHeight / 2;
+			thumbStartY -= expand;
+			thumbEndY += expand;
+		}
+		parsed.thumbStartY = thumbStartY / parsed.pageHeight * parsed.height;
+		parsed.thumbEndY = thumbEndY / parsed.pageHeight * parsed.height;
+		parsed.thumbHeight = parsed.thumbEndY - parsed.thumbStartY;
+
+		let thumbStartX = parsed.scrollX - expandedArea;
+		let thumbEndX = parsed.scrollX + parsed.width + expandedArea;
+		let thumbWidth = (thumbEndX - thumbStartX) / parsed.pageWidth * parsed.width;
+		let minWidth = myPrefs.thumbMinWidth;
+		if (thumbWidth < minWidth) {
+			let expand = (minWidth - thumbWidth) / parsed.width * parsed.pageWidth / 2;
+			thumbStartX -= expand;
+			thumbEndX += expand;
+		}
+		parsed.thumbStartX = thumbStartX / parsed.pageWidth * parsed.width;
+		parsed.thumbEndX = thumbEndX / parsed.pageWidth * parsed.width;
+		parsed.thumbWidth = parsed.thumbEndX - parsed.thumbStartX;
+	}
 
 	if (myPrefs.debug && aEvent.type != 'touchmove')
 		chrome.NativeWindow.toast.show(aEvent.type+'\n'+
@@ -97,12 +131,20 @@ function handleTouchStart(aEvent) {
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (!parsed.rightEdgeTouching && !parsed.bottomEdgeTouching)
 		return;
+	scrollXAxis = false;
+	scrollYAxis = false;
+	if (myPrefs.thumbEnabled) {
+		if (parsed.rightEdgeTouching)
+			scrollYAxis = parsed.eventY >= parsed.thumbStartY && parsed.eventY <= parsed.thumbEndY;
+		if (parsed.bottomEdgeTouching)
+			scrollXAxis = parsed.eventX >= parsed.thumbStartX && parsed.eventX <= parsed.thumbEndX;
+		if (!scrollXAxis && !scrollYAxis)
+			return;
+	}
 	state = STATE_READY;
 	startX = parsed.eventX;
 	startY = parsed.eventY;
 	startTime = Date.now();
-	scrollXAxis = false;
-	scrollYAxis = false;
 }
 
 function handleTouchEnd(aEvent) {
@@ -137,8 +179,8 @@ function handleTouchMove(aEvent) {
 		if (Date.now() - startTime < myPrefs.startDelay)
 			return;
 		let threshold = myPrefs.startThreshold;
-		scrollXAxis = parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
-		scrollYAxis = parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
+		scrollXAxis = scrollXAxis && parsed.bottomEdgeTouching && Math.abs(parsed.eventX - startX) >= threshold;
+		scrollYAxis = scrollYAxis && parsed.rightEdgeTouching && Math.abs(parsed.eventY - startY) >= threshold;
 		if (!scrollXAxis && !scrollYAxis)
 			return;
 		if (myPrefs.debug)
