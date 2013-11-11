@@ -150,17 +150,14 @@ function handleTouchStart(aEvent) {
 function handleTouchEnd(aEvent) {
 	if (state == STATE_NONE)
 		return;
-	if (aEvent.touches.length != 1) {
-		state = STATE_NONE;
-		return;
-	}
 	state = STATE_NONE;
 	startTime = -1;
 	startX = -1;
 	startY = -1;
 	scrollXAxis = false;
 	scrollYAxis = false;
-	var [chrome, content, parsed] = parseTouchEvent(aEvent);
+	var content = aEvent.originalTarget;
+	content = content.defaultView || content.ownerDocument.defaultView;
 	let (thumb = thumbsXAxis.get(content)) {
 		if (thumb) {
 			thumb.parentNode.removeChild(thumb);
@@ -173,7 +170,6 @@ function handleTouchEnd(aEvent) {
 			thumbsYAxis.set(content, undefined);
 		}
 	}
-	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
