@@ -261,7 +261,7 @@ function showThumbXAxis(aWindow, aParsedTouch, aOpacity) {
 		thumb = createThumb(aWindow);
 		thumbsXAxis.set(aWindow, thumb);
 	}
-	var mergin = aParsedTouch.thumbWidth * 0.1;
+	var mergin = myPrefs.thumbExpandedArea;
 	updateThumbAppearance({
 		thumb       : thumb,
 		width       : aParsedTouch.thumbWidth - (mergin * 2),
@@ -283,7 +283,7 @@ function showThumbYAxis(aWindow, aParsedTouch, aOpacity) {
 		thumb = createThumb(aWindow);
 		thumbsYAxis.set(aWindow, thumb);
 	}
-	var mergin = aParsedTouch.thumbHeight * 0.1;
+	var mergin = myPrefs.thumbExpandedArea;
 	updateThumbAppearance({
 		thumb       : thumb,
 		width       : aParsedTouch.thumbVisualWidth,
