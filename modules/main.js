@@ -195,13 +195,14 @@ function handleTouchMove(aEvent) {
 	}
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (state != STATE_HANDLING) {
-		if (!tryActivateScrollbar(parsed)) {
+		if (!myPrefs.thumbEnabled && !tryActivateScrollbar(parsed)) {
 			if (scrollHorizontally)
 				showHorizontalThumb(content, parsed, 0.5);
 			if (scrollVertically)
 				showVerticalThumb(content, parsed, 0.5);
 			return;
 		}
+		state = STATE_HANDLING;
 		let timer = clearThumbsTimers.get(chrome);
 		if (timer) {
 			chrome.clearTimeout(timer);
@@ -226,7 +227,6 @@ function tryActivateScrollbar(aParsedTouch) {
 	scrollVertically = scrollVertically && aParsedTouch.rightEdgeTouching && Math.abs(aParsedTouch.eventY - startY) >= threshold;
 	if (!scrollHorizontally && !scrollVertically)
 		return false;
-	state = STATE_HANDLING;
 	return true;
 }
 
