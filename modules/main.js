@@ -18,6 +18,8 @@ myPrefs.define('offsetMinY',     64,    'offset.minY');
 myPrefs.define('scrollDelay',    50);
 myPrefs.define('thumbEnabled',   true, 'thumb.enabled');
 myPrefs.define('thumbExpandedArea', 16, 'thumb.expandedArea');
+myPrefs.define('thumbWidth',     38,   'thumb.width');
+myPrefs.define('thumbHeight',    38,   'thumb.height');
 myPrefs.define('thumbMinWidth',  80,   'thumb.minWidth');
 myPrefs.define('thumbMinHeight', 80,   'thumb.minHeight');
 
@@ -60,7 +62,7 @@ function parseClientEvent(aEvent) {
 		scrollMaxY : (viewport.pageBottom - viewport.height) / viewport.zoom
 	};
 	parsed.rightArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeRight);
-	parsed.bottomArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeBottom);
+	parsed.bottomArea = Math.min(viewport.height * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeBottom);
 	parsed.canScrollXAxis = parsed.scrollMaxX / viewport.zoom / viewport.width > MIN_SCROLLABLE_SIZE;
 	parsed.canScrollYAxis = parsed.scrollMaxY / viewport.zoom / viewport.height > MIN_SCROLLABLE_SIZE;
 
@@ -79,6 +81,7 @@ function parseClientEvent(aEvent) {
 		parsed.thumbStartY = thumbStartY / parsed.pageHeight * parsed.height;
 		parsed.thumbEndY = thumbEndY / parsed.pageHeight * parsed.height;
 		parsed.thumbHeight = parsed.thumbEndY - parsed.thumbStartY;
+		parsed.thumbVisualWidth = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.thumbWidth);
 
 		let thumbStartX = parsed.scrollX - expandedArea;
 		let thumbEndX = parsed.scrollX + parsed.width + expandedArea;
@@ -92,6 +95,7 @@ function parseClientEvent(aEvent) {
 		parsed.thumbStartX = thumbStartX / parsed.pageWidth * parsed.width;
 		parsed.thumbEndX = thumbEndX / parsed.pageWidth * parsed.width;
 		parsed.thumbWidth = parsed.thumbEndX - parsed.thumbStartX;
+		parsed.thumbVisualHeight = Math.min(viewport.height * MAX_SCROLLBAR_SIZE, myPrefs.thumbHeight);
 	}
 
 	if (myPrefs.debug && aEvent.type != 'touchmove')
@@ -257,16 +261,17 @@ function showThumbXAxis(aWindow, aParsedTouch, aOpacity) {
 		thumb = createThumb(aWindow);
 		thumbsXAxis.set(aWindow, thumb);
 	}
+	var mergin = aParsedTouch.thumbWidth * 0.1;
 	updateThumbAppearance({
 		thumb       : thumb,
-		width       : aParsedTouch.thumbWidth,
-		height      : aParsedTouch.bottomArea,
+		width       : aParsedTouch.thumbWidth - (mergin * 2),
+		height      : aParsedTouch.thumbVisualHeight,
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
 	style.bottom = 0;
 	style.display = 'block';
-	style.left = (aParsedTouch.thumbStartX / aParsedTouch.zoom) + 'px';
+	style.left = ((aParsedTouch.thumbStartX + mergin) / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
 }
 
@@ -278,16 +283,17 @@ function showThumbYAxis(aWindow, aParsedTouch, aOpacity) {
 		thumb = createThumb(aWindow);
 		thumbsYAxis.set(aWindow, thumb);
 	}
+	var mergin = aParsedTouch.thumbHeight * 0.1;
 	updateThumbAppearance({
 		thumb       : thumb,
-		width       : aParsedTouch.rightArea,
-		height      : aParsedTouch.thumbHeight,
+		width       : aParsedTouch.thumbVisualWidth,
+		height      : aParsedTouch.thumbHeight - (mergin * 2),
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
 	style.right = 0;
 	style.display = 'block';
-	style.top = (aParsedTouch.thumbStartY / aParsedTouch.zoom) + 'px';
+	style.top = ((aParsedTouch.thumbStartY + mergin) / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
 }
 
