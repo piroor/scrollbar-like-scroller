@@ -72,7 +72,7 @@ function parseClientEvent(aEvent) {
 		let vThumbStart = parsed.scrollY - expandedArea;
 		let vThumbEnd = parsed.scrollY + parsed.height + expandedArea;
 		let vThumbHeight = (vThumbEnd - vThumbStart) / parsed.pageHeight * parsed.height;
-		let vThumbMinHeight = myPrefs.thumbMinHeight;
+		let vThumbMinHeight = myPrefs.vThumbMinHeight;
 		if (vThumbHeight < vThumbMinHeight) {
 			let expand = (vThumbMinHeight - vThumbHeight) / parsed.height * parsed.pageHeight / 2;
 			vThumbStart -= expand;
@@ -86,7 +86,7 @@ function parseClientEvent(aEvent) {
 		let hThumbStart = parsed.scrollX - expandedArea;
 		let hThumbEnd = parsed.scrollX + parsed.width + expandedArea;
 		let hThumbWidth = (hThumbEnd - hThumbStart) / parsed.pageWidth * parsed.width;
-		let hThumbMinWidth = myPrefs.thumbMinWidth;
+		let hThumbMinWidth = myPrefs.hThumbMinWidth;
 		if (hThumbWidth < hThumbMinWidth) {
 			let expand = (hThumbMinWidth - hThumbWidth) / parsed.width * parsed.pageWidth / 2;
 			hThumbStart -= expand;
