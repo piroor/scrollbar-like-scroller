@@ -161,6 +161,18 @@ function handleTouchEnd(aEvent) {
 	scrollXAxis = false;
 	scrollYAxis = false;
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
+	let (thumb = thumbsXAxis.get(content)) {
+		if (thumb) {
+			thumb.parentNode.removeChild(thumb);
+			thumbsXAxis.set(content, undefined);
+		}
+	}
+	let (thumb = thumbsYAxis.get(content)) {
+		if (thumb) {
+			thumb.parentNode.removeChild(thumb);
+			thumbsYAxis.set(content, undefined);
+		}
+	}
 	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
@@ -188,11 +200,40 @@ function handleTouchMove(aEvent) {
 				JSON.stringify(parsed).replace(/,/g,',\n'), 'short');
 		state = STATE_HANDLING;
 	}
+	if (scrollXAxis) {
+		let thumb = thumbsXAxis.get(content);
+		if (!thumb) {
+			thumb = createThumb(content);
+			thumbsXAxis.set(content, thumb);
+		}
+		let style = thumb.style;
+		style.minHeight = (parsed.bottomArea / parsed.zoom) + 'px';
+		style.minWidth = (parsed.thumbWidth / parsed.zoom) + 'px';
+		style.bottom = 0;
+		style.display = 'block';
+		style.left = (parsed.thumbStartX / parsed.zoom) + 'px';
+	}
+	if (scrollYAxis) {
+		let thumb = thumbsYAxis.get(content);
+		if (!thumb) {
+			thumb = createThumb(content);
+			thumbsYAxis.set(content, thumb);
+		}
+		let style = thumb.style;
+		style.minWidth = (parsed.rightArea / parsed.zoom) + 'px';
+		style.minHeight = (parsed.thumbHeight / parsed.zoom) + 'px';
+		style.display = 'block';
+		style.right = 0;
+		style.top = (parsed.thumbStartY / parsed.zoom) + 'px';
+	}
 	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
 }
+
+var thumbsXAxis = new WeakMap();
+var thumbsYAxis = new WeakMap();
 
 function handleWindow(aWindow)
 {
@@ -203,6 +244,20 @@ function handleWindow(aWindow)
 	aWindow.addEventListener('touchstart', handleTouchStart, true);
 	aWindow.addEventListener('touchend', handleTouchEnd, true);
 	aWindow.addEventListener('touchmove', handleTouchMove, true);
+}
+
+function createThumb(aWindow) {
+	var thumb = aWindow.document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+	aWindow.document.documentElement.appendChild(thumb);
+	var style = thumb.style;
+	style.display = 'none';
+	style.zIndex = 65000;
+	style.background = 'red';
+	style.border = '2px solid red';
+	style.position = 'fixed';
+	style.MozTransition = 'top 0.2s linier, left 0.2s linier, right 0.2s linier, bottom 0.2s linier, min-width 0.2s ease, min-height 0.2s ease';
+	style.margin = 'auto';
+	return thumb;
 }
 
 WindowManager.getWindows(TYPE_BROWSER).forEach(handleWindow);
@@ -216,6 +271,8 @@ function shutdown()
 		aWindow.removeEventListener('touchmove', handleTouchMove, true);
 	});
 
+	thumbsXAxis = undefined;
+	thumbsYAxis = undefined;
 	WindowManager = undefined;
 	myPrefs.destroy();
 	myPrefs = undefined;
