@@ -218,7 +218,7 @@ function showThumbXAxis(aWindow, aParsedTouch, aOpacity) {
 	style.opacity = aOpacity;
 }
 
-function showThumbYAxis(aWindow, aParsedTouch) {
+function showThumbYAxis(aWindow, aParsedTouch, aOpacity) {
 	var thumb = thumbsYAxis.get(aWindow);
 	if (!thumb) {
 		thumb = createThumb(aWindow);
