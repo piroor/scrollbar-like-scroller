@@ -205,10 +205,13 @@ function showThumbXAxis(aWindow, aParsedTouch, aOpacity) {
 		thumb = createThumb(aWindow);
 		thumbsXAxis.set(aWindow, thumb);
 	}
-	let style = thumb.style;
-	style.minHeight = (aParsedTouch.bottomArea / aParsedTouch.zoom) + 'px';
-	style.minWidth = (aParsedTouch.thumbWidth / aParsedTouch.zoom) + 'px';
-	style.borderWidth = (thumbBorderWidth / aParsedTouch.zoom) + 'px';
+	updateThumbAppearance({
+		thumb       : thumb,
+		width       : aParsedTouch.thumbWidth,
+		height      : aParsedTouch.bottomArea,
+		parsedTouch : aParsedTouch
+	});
+	var style = thumb.style;
 	style.bottom = 0;
 	style.display = 'block';
 	style.left = (aParsedTouch.thumbStartX / aParsedTouch.zoom) + 'px';
@@ -221,14 +224,26 @@ function showThumbYAxis(aWindow, aParsedTouch) {
 		thumb = createThumb(aWindow);
 		thumbsYAxis.set(aWindow, thumb);
 	}
-	let style = thumb.style;
-	style.minWidth = (aParsedTouch.rightArea / aParsedTouch.zoom) + 'px';
-	style.minHeight = (aParsedTouch.thumbHeight / aParsedTouch.zoom) + 'px';
-	style.borderWidth = (thumbBorderWidth / aParsedTouch.zoom) + 'px';
+	updateThumbAppearance({
+		thumb       : thumb,
+		width       : aParsedTouch.rightArea,
+		height      : aParsedTouch.thumbHeight,
+		parsedTouch : aParsedTouch
+	});
+	var style = thumb.style;
 	style.right = 0;
 	style.display = 'block';
 	style.top = (aParsedTouch.thumbStartY / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
+}
+
+function updateThumbAppearance(aParams) {
+	var style = aParams.thumb.style;
+	var parsed = aParams.parsedTouch;
+	style.minHeight = (aParams.height / parsed.zoom) + 'px';
+	style.minWidth = (aParams.width / parsed.zoom) + 'px';
+	style.borderWidth = (thumbBorderWidth / parsed.zoom) + 'px';
+	style.borderRadius = style.MozBorderRadius = (thumbBorderRadius / parsed.zoom) + 'px';
 }
 
 function hideThumb(aWindow, aThumbs) {
@@ -240,6 +255,7 @@ function hideThumb(aWindow, aThumbs) {
 }
 
 var thumbBorderWidth = 4;
+var thumbBorderRadius = 8;
 function createThumb(aWindow) {
 	var thumb = aWindow.document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
 	aWindow.document.documentElement.appendChild(thumb);
@@ -248,7 +264,7 @@ function createThumb(aWindow) {
 	style.zIndex = 65000;
 	style.background = 'rgba(0, 0, 0, 0.5)';
 	style.border = thumbBorderWidth + 'px solid rgba(255, 255, 255, 0.75)';
-	style.borderRadius = style.MozBorderRadius = '25%';
+	style.borderRadius = style.MozBorderRadius = thumbBorderRadius + 'px';
 	style.position = 'fixed';
 	style.transition = style.MozTransition = [
 		'top 0.2s linier',
