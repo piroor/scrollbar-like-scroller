@@ -51,9 +51,9 @@ function parseClientEvent(aEvent) {
 	var viewport = chrome.BrowserApp.selectedTab.getViewport();
 	var [pageWidth, pageHeight] = chrome.BrowserApp.selectedTab.getPageSize(content.document, viewport.width, viewport.height);
 	var parsed = {
-		zoom    : viewport.zoom,
-		width   : viewport.width,
-		height  : viewport.height,
+		zoom       : viewport.zoom,
+		width      : viewport.width,
+		height     : viewport.height,
 		pageWidth  : viewport.pageRight,
 		pageHeight : viewport.pageBottom,
 		scrollX    : viewport.x,
@@ -69,32 +69,32 @@ function parseClientEvent(aEvent) {
 	if (myPrefs.thumbEnabled) {
 		let expandedArea = myPrefs.thumbExpandedArea * viewport.zoom;
 
-		let vThumbStart = parsed.scrollY - expandedArea;
-		let vThumbEnd = parsed.scrollY + parsed.height + expandedArea;
-		let vThumbHeight = (vThumbEnd - vThumbStart) / parsed.pageHeight * parsed.height;
+		let vThumbStart     = parsed.scrollY - expandedArea;
+		let vThumbEnd       = parsed.scrollY + parsed.height + expandedArea;
+		let vThumbHeight    = (vThumbEnd - vThumbStart) / parsed.pageHeight * parsed.height;
 		let vThumbMinHeight = myPrefs.vThumbMinHeight;
 		if (vThumbHeight < vThumbMinHeight) {
 			let expand = (vThumbMinHeight - vThumbHeight) / parsed.height * parsed.pageHeight / 2;
 			vThumbStart -= expand;
-			vThumbEnd += expand;
+			vThumbEnd   += expand;
 		}
-		parsed.vThumbStart = vThumbStart / parsed.pageHeight * parsed.height;
-		parsed.vThumbEnd = vThumbEnd / parsed.pageHeight * parsed.height;
+		parsed.vThumbStart  = vThumbStart / parsed.pageHeight * parsed.height;
+		parsed.vThumbEnd    = vThumbEnd / parsed.pageHeight * parsed.height;
 		parsed.vThumbHeight = parsed.vThumbEnd - parsed.vThumbStart;
-		parsed.vThumbWidth = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.vThumbWidth);
+		parsed.vThumbWidth  = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.vThumbWidth);
 
-		let hThumbStart = parsed.scrollX - expandedArea;
-		let hThumbEnd = parsed.scrollX + parsed.width + expandedArea;
-		let hThumbWidth = (hThumbEnd - hThumbStart) / parsed.pageWidth * parsed.width;
+		let hThumbStart    = parsed.scrollX - expandedArea;
+		let hThumbEnd      = parsed.scrollX + parsed.width + expandedArea;
+		let hThumbWidth    = (hThumbEnd - hThumbStart) / parsed.pageWidth * parsed.width;
 		let hThumbMinWidth = myPrefs.hThumbMinWidth;
 		if (hThumbWidth < hThumbMinWidth) {
 			let expand = (hThumbMinWidth - hThumbWidth) / parsed.width * parsed.pageWidth / 2;
 			hThumbStart -= expand;
-			hThumbEnd += expand;
+			hThumbEnd   += expand;
 		}
-		parsed.hThumbStart = hThumbStart / parsed.pageWidth * parsed.width;
-		parsed.hThumbEnd = hThumbEnd / parsed.pageWidth * parsed.width;
-		parsed.hThumbWidth = parsed.hThumbEnd - parsed.hThumbStart;
+		parsed.hThumbStart  = hThumbStart / parsed.pageWidth * parsed.width;
+		parsed.hThumbEnd    = hThumbEnd / parsed.pageWidth * parsed.width;
+		parsed.hThumbWidth  = parsed.hThumbEnd - parsed.hThumbStart;
 		parsed.hThumbHeight = Math.min(viewport.height * MAX_SCROLLBAR_SIZE, myPrefs.hThumbHeight);
 	}
 
@@ -319,13 +319,13 @@ function createThumb(aWindow) {
 	var thumb = aWindow.document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
 	aWindow.document.documentElement.appendChild(thumb);
 	var style = thumb.style;
-	style.display = 'none';
-	style.zIndex = 65000;
-	style.background = 'rgba(0, 0, 0, 0.5)';
-	style.border = thumbBorderWidth + 'px solid rgba(255, 255, 255, 0.75)';
+	style.display      = 'none';
+	style.zIndex       = 65000;
+	style.background   = 'rgba(0, 0, 0, 0.5)';
+	style.border       = thumbBorderWidth + 'px solid rgba(255, 255, 255, 0.75)';
 	style.borderRadius = style.MozBorderRadius = thumbBorderRadius + 'px';
-	style.position = 'fixed';
-	style.transition = style.MozTransition = [
+	style.position     = 'fixed';
+	style.transition   = style.MozTransition = [
 		'top 0.2s linier',
 		'left 0.2s linier',
 		'right 0.2s linier',
