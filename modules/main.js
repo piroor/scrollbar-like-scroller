@@ -262,17 +262,16 @@ function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 		thumb = createThumb(aWindow);
 		horizontalThumbs.set(aWindow, thumb);
 	}
-	var mergin = myPrefs.thumbExpandedArea;
 	updateThumbAppearance({
 		thumb       : thumb,
-		width       : aParsedTouch.hThumbWidth - (mergin * 2),
+		width       : aParsedTouch.hThumbWidth,
 		height      : aParsedTouch.hThumbHeight,
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
 	style.bottom = 0;
 	style.display = 'block';
-	style.left = ((aParsedTouch.hThumbStart + mergin) / aParsedTouch.zoom) + 'px';
+	style.left = (aParsedTouch.hThumbStart / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
 }
 
@@ -284,17 +283,16 @@ function showVerticalThumb(aWindow, aParsedTouch, aOpacity) {
 		thumb = createThumb(aWindow);
 		verticalThumbs.set(aWindow, thumb);
 	}
-	var mergin = myPrefs.thumbExpandedArea;
 	updateThumbAppearance({
 		thumb       : thumb,
 		width       : aParsedTouch.vThumbWidth,
-		height      : aParsedTouch.vThumbHeight - (mergin * 2),
+		height      : aParsedTouch.vThumbHeight,
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
 	style.right = 0;
 	style.display = 'block';
-	style.top = ((aParsedTouch.vThumbStart + mergin) / aParsedTouch.zoom) + 'px';
+	style.top = (aParsedTouch.vThumbStart / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
 }
 
