@@ -8,7 +8,8 @@
 
 <!ENTITY config.thumbEnabled.label   "Show thumb for toolbars">
 
-<!ENTITY config.startDelay.label     "Ignore &quot;swipe&quot; actions in the time (msec)">
-<!ENTITY config.startThreshold.label "Treshold to start scrollbar like behavior">
+<!ENTITY config.thumbDisabled.title  "Triggers to start scrollbar behavior when thumbs are disabled">
+<!ENTITY config.startDelay.label     "Start virtual scrollbar when you swipe the screen edge after a delay (msec)">
+<!ENTITY config.startThreshold.label "and dragging with more than the following distance">
 
 <!ENTITY config.debug.label "Debug mode">
