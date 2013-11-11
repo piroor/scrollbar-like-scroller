@@ -12,16 +12,16 @@ myPrefs.define('areaSizeBottom', 64, 'areaSize.buttom');
 myPrefs.define('startThreshold', 12);
 myPrefs.define('startDelay',     150);
 myPrefs.define('offsetX',        '0.05', 'offset.x');
-myPrefs.define('offsetMinX',     64,    'offset.minX');
+myPrefs.define('offsetMinX',     64,     'offset.minX');
 myPrefs.define('offsetY',        '0.05', 'offset.y');
-myPrefs.define('offsetMinY',     64,    'offset.minY');
+myPrefs.define('offsetMinY',     64,     'offset.minY');
 myPrefs.define('scrollDelay',    50);
-myPrefs.define('thumbEnabled',   true, 'thumb.enabled');
-myPrefs.define('thumbExpandedArea', 16, 'thumb.expandedArea');
-myPrefs.define('vThumbWidth',     38,   'thumb.vertical.width');
-myPrefs.define('vThumbMinHeight', 80,   'thumb.vertical.minHeight');
-myPrefs.define('hThumbHeight',    38,   'thumb.horizontal.height');
-myPrefs.define('hThumbMinWidth',  80,   'thumb.horizontal.minWidth');
+myPrefs.define('thumbEnabled',      true, 'thumb.enabled');
+myPrefs.define('thumbExpandedArea', 16,   'thumb.expandedArea');
+myPrefs.define('vThumbWidth',       38,   'thumb.vertical.width');
+myPrefs.define('vThumbMinHeight',   80,   'thumb.vertical.minHeight');
+myPrefs.define('hThumbHeight',      38,   'thumb.horizontal.height');
+myPrefs.define('hThumbMinWidth',    80,   'thumb.horizontal.minWidth');
 
 Cu.import('resource://gre/modules/Services.jsm');
 
