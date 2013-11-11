@@ -6,6 +6,8 @@
 <!ENTITY config.areaSize.right.label  "Right">
 <!ENTITY config.areaSize.bottom.label "Bottom">
 
+<!ENTITY config.thumbEnabled.label   "Show thumb for toolbars">
+
 <!ENTITY config.startDelay.label     "Ignore &quot;swipe&quot; actions in the time (msec)">
 <!ENTITY config.startThreshold.label "Treshold to start scrollbar like behavior">
 
