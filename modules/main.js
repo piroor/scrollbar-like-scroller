@@ -205,6 +205,7 @@ function handleTouchMove(aEvent) {
 		let style = thumb.style;
 		style.minHeight = (parsed.bottomArea / parsed.zoom) + 'px';
 		style.minWidth = (parsed.thumbWidth / parsed.zoom) + 'px';
+		style.borderWidth = (thumbBorderWidth / parsed.zoom) + 'px';
 		style.bottom = 0;
 		style.display = 'block';
 		style.left = (parsed.thumbStartX / parsed.zoom) + 'px';
@@ -218,8 +219,9 @@ function handleTouchMove(aEvent) {
 		let style = thumb.style;
 		style.minWidth = (parsed.rightArea / parsed.zoom) + 'px';
 		style.minHeight = (parsed.thumbHeight / parsed.zoom) + 'px';
-		style.display = 'block';
+		style.borderWidth = (thumbBorderWidth / parsed.zoom) + 'px';
 		style.right = 0;
+		style.display = 'block';
 		style.top = (parsed.thumbStartY / parsed.zoom) + 'px';
 	}
 	updateScrollPosition(content, parsed);
@@ -242,16 +244,18 @@ function handleWindow(aWindow)
 	aWindow.addEventListener('touchmove', handleTouchMove, true);
 }
 
+var thumbBorderWidth = 4;
 function createThumb(aWindow) {
 	var thumb = aWindow.document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
 	aWindow.document.documentElement.appendChild(thumb);
 	var style = thumb.style;
 	style.display = 'none';
 	style.zIndex = 65000;
-	style.background = 'red';
-	style.border = '2px solid red';
+	style.background = 'rgba(0, 0, 0, 0.5)';
+	style.border = thumbBorderWidth + 'px solid rgba(255, 255, 255, 0.75)';
+	style.borderRadius = style.MozBorderRadius = '25%';
 	style.position = 'fixed';
-	style.MozTransition = 'top 0.2s linier, left 0.2s linier, right 0.2s linier, bottom 0.2s linier, min-width 0.2s ease, min-height 0.2s ease';
+	style.transition = style.MozTransition = 'top 0.2s linier, left 0.2s linier, right 0.2s linier, bottom 0.2s linier, min-width 0.2s ease, min-height 0.2s ease';
 	style.margin = 'auto';
 	return thumb;
 }
