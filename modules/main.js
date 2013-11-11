@@ -182,6 +182,7 @@ function handleTouchEnd(aEvent) {
 	hideThumb(content, verticalThumbs);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
+	var chrome = WindowManager.getWindow(TYPE_BROWSER);
 	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
 }
 
