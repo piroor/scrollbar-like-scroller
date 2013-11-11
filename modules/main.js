@@ -158,18 +158,8 @@ function handleTouchEnd(aEvent) {
 	scrollYAxis = false;
 	var content = aEvent.originalTarget;
 	content = content.defaultView || content.ownerDocument.defaultView;
-	let (thumb = thumbsXAxis.get(content)) {
-		if (thumb) {
-			thumb.parentNode.removeChild(thumb);
-			thumbsXAxis.set(content, undefined);
-		}
-	}
-	let (thumb = thumbsYAxis.get(content)) {
-		if (thumb) {
-			thumb.parentNode.removeChild(thumb);
-			thumbsYAxis.set(content, undefined);
-		}
-	}
+	hideThumb(content, thumbsXAxis);
+	hideThumb(content, thumbsYAxis);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
@@ -196,34 +186,10 @@ function handleTouchMove(aEvent) {
 				JSON.stringify(parsed).replace(/,/g,',\n'), 'short');
 		state = STATE_HANDLING;
 	}
-	if (scrollXAxis) {
-		let thumb = thumbsXAxis.get(content);
-		if (!thumb) {
-			thumb = createThumb(content);
-			thumbsXAxis.set(content, thumb);
-		}
-		let style = thumb.style;
-		style.minHeight = (parsed.bottomArea / parsed.zoom) + 'px';
-		style.minWidth = (parsed.thumbWidth / parsed.zoom) + 'px';
-		style.borderWidth = (thumbBorderWidth / parsed.zoom) + 'px';
-		style.bottom = 0;
-		style.display = 'block';
-		style.left = (parsed.thumbStartX / parsed.zoom) + 'px';
-	}
-	if (scrollYAxis) {
-		let thumb = thumbsYAxis.get(content);
-		if (!thumb) {
-			thumb = createThumb(content);
-			thumbsYAxis.set(content, thumb);
-		}
-		let style = thumb.style;
-		style.minWidth = (parsed.rightArea / parsed.zoom) + 'px';
-		style.minHeight = (parsed.thumbHeight / parsed.zoom) + 'px';
-		style.borderWidth = (thumbBorderWidth / parsed.zoom) + 'px';
-		style.right = 0;
-		style.display = 'block';
-		style.top = (parsed.thumbStartY / parsed.zoom) + 'px';
-	}
+	if (scrollXAxis)
+		showThumbXAxis(content, parsed, 1);
+	if (scrollYAxis)
+		showThumbYAxis(content, parsed, 1);
 	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
@@ -233,15 +199,44 @@ function handleTouchMove(aEvent) {
 var thumbsXAxis = new WeakMap();
 var thumbsYAxis = new WeakMap();
 
-function handleWindow(aWindow)
-{
-	var doc = aWindow.document;
-	if (doc.documentElement.getAttribute('windowtype') != TYPE_BROWSER)
-		return;
+function showThumbXAxis(aWindow, aParsedTouch, aOpacity) {
+	var thumb = thumbsXAxis.get(aWindow);
+	if (!thumb) {
+		thumb = createThumb(aWindow);
+		thumbsXAxis.set(aWindow, thumb);
+	}
+	let style = thumb.style;
+	style.minHeight = (aParsedTouch.bottomArea / aParsedTouch.zoom) + 'px';
+	style.minWidth = (aParsedTouch.thumbWidth / aParsedTouch.zoom) + 'px';
+	style.borderWidth = (thumbBorderWidth / aParsedTouch.zoom) + 'px';
+	style.bottom = 0;
+	style.display = 'block';
+	style.left = (aParsedTouch.thumbStartX / aParsedTouch.zoom) + 'px';
+	style.opacity = aOpacity;
+}
 
-	aWindow.addEventListener('touchstart', handleTouchStart, true);
-	aWindow.addEventListener('touchend', handleTouchEnd, true);
-	aWindow.addEventListener('touchmove', handleTouchMove, true);
+function showThumbYAxis(aWindow, aParsedTouch) {
+	var thumb = thumbsYAxis.get(aWindow);
+	if (!thumb) {
+		thumb = createThumb(aWindow);
+		thumbsYAxis.set(aWindow, thumb);
+	}
+	let style = thumb.style;
+	style.minWidth = (aParsedTouch.rightArea / aParsedTouch.zoom) + 'px';
+	style.minHeight = (aParsedTouch.thumbHeight / aParsedTouch.zoom) + 'px';
+	style.borderWidth = (thumbBorderWidth / aParsedTouch.zoom) + 'px';
+	style.right = 0;
+	style.display = 'block';
+	style.top = (aParsedTouch.thumbStartY / aParsedTouch.zoom) + 'px';
+	style.opacity = aOpacity;
+}
+
+function hideThumb(aWindow, aThumbs) {
+	var thumb = aThumbs.get(aWindow);
+	if (thumb) {
+		thumb.parentNode.removeChild(thumb);
+		aThumbs.delete(aWindow);
+	}
 }
 
 var thumbBorderWidth = 4;
@@ -255,9 +250,27 @@ function createThumb(aWindow) {
 	style.border = thumbBorderWidth + 'px solid rgba(255, 255, 255, 0.75)';
 	style.borderRadius = style.MozBorderRadius = '25%';
 	style.position = 'fixed';
-	style.transition = style.MozTransition = 'top 0.2s linier, left 0.2s linier, right 0.2s linier, bottom 0.2s linier, min-width 0.2s ease, min-height 0.2s ease';
+	style.transition = style.MozTransition = [
+		'top 0.2s linier',
+		'left 0.2s linier',
+		'right 0.2s linier',
+		'bottom 0.2s linier',
+		'opacity 0.2s ease'
+	].join('\n');
 	style.margin = 'auto';
 	return thumb;
+}
+
+
+function handleWindow(aWindow)
+{
+	var doc = aWindow.document;
+	if (doc.documentElement.getAttribute('windowtype') != TYPE_BROWSER)
+		return;
+
+	aWindow.addEventListener('touchstart', handleTouchStart, true);
+	aWindow.addEventListener('touchend', handleTouchEnd, true);
+	aWindow.addEventListener('touchmove', handleTouchMove, true);
 }
 
 WindowManager.getWindows(TYPE_BROWSER).forEach(handleWindow);
