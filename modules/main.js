@@ -25,6 +25,9 @@ Cu.import('resource://gre/modules/Services.jsm');
 
 const TYPE_BROWSER = 'navigator:browser';
 
+const MIN_SCROLLABLE_SIZE = 0.1;
+const MAX_SCROLLBAR_SIZE = 0.5;
+
 function parseTouchEvent(aEvent) {
 	var chrome = WindowManager.getWindow(TYPE_BROWSER);
 	var content = aEvent.originalTarget;
@@ -47,12 +50,12 @@ function parseTouchEvent(aEvent) {
 		eventX  : touch.clientX * viewport.zoom,
 		eventY  : touch.clientY * viewport.zoom
 	};
-	var maxXArea = viewport.width * 0.5;
-	parsed.rightArea = Math.min(maxXArea, myPrefs.areaSizeRight);
-	var maxYArea = viewport.width * 0.5;
-	parsed.bottomArea = Math.min(maxYArea, myPrefs.areaSizeBottom);
-	parsed.rightEdgeTouching = parsed.width - parsed.eventX <= parsed.rightArea;
-	parsed.bottomEdgeTouching = parsed.height - parsed.eventY <= parsed.bottomArea;
+	parsed.rightArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeRight);
+	parsed.bottomArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeBottom);
+	var canScrollXAxis = parsed.scrollMaxX / viewport.zoom / viewport.width > MIN_SCROLLABLE_SIZE;
+	var canScrollYAxis = parsed.scrollMaxY / viewport.zoom / viewport.height > MIN_SCROLLABLE_SIZE;
+	parsed.rightEdgeTouching = canScrollYAxis && parsed.width - parsed.eventX <= parsed.rightArea;
+	parsed.bottomEdgeTouching = canScrollXAxis && parsed.height - parsed.eventY <= parsed.bottomArea;
 
 	if (myPrefs.thumbEnabled) {
 		let expandedArea = myPrefs.thumbExpandedArea * viewport.zoom;
