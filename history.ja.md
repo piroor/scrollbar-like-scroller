@@ -1,6 +1,9 @@
 # 更新履歴
 
  - master/HEAD
+ - 1.0 (2013.11.12)
+   * 仮想的なつまみを実装した
+   * 画面の左端と上端でもスクロールバー風の動作を行うようにした
  - 0.6 (2013.11.09)
    * Firefox本来のパンスクロールを正しくキャンセルするようにした
      （[Quick Gestures](https://addons.mozilla.org/ja/android/addon/quick-gestures/)を参考にしました。takachanさん、情報提供ありがとうございます。）

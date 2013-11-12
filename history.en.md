@@ -1,6 +1,9 @@
 # History
 
  - master/HEAD
+ - 1.0 (2013.11.12)
+   * Works with virtual thumb.
+   * Supports virtual scrollbars on top and left edges.
  - 0.6 (2013.11.09)
    * Cancel native scroll correctly.
      (Referring [Quick Gestures](https://addons.mozilla.org/ja/android/addon/quick-gestures/), thanks to takachan!)
