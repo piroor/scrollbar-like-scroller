@@ -40,7 +40,7 @@ const STATE_HANDLING = 2;
 const AXIS_VERTICALLY   = 1;
 const AXIS_HORIZONTALLY = 2;
 
-const ANIMATION_DURATION_OPACITY = 200;
+const ANIMATION_DURATION_OPACITY = 500;
 
 function getCurrentStateFromTouchEvent(aEvent) {
 	var touch = aEvent.touches[0];
@@ -389,16 +389,7 @@ function createThumb(aWindow, aAxis) {
 	style.border       = THUMB_BORDER_WIDTH + 'px solid rgba(255, 255, 255, 0.75)';
 	style.borderRadius = style.MozBorderRadius = THUMB_BORDER_RADIUS + 'px';
 	style.position     = 'fixed';
-	var transitions = ['opacity ' + ANIMATION_DURATION_OPACITY + 'ms ease'];
-	if (aAxis == AXIS_VERTICALLY) {
-		transitions.push('top 0.2s linier');
-		transitions.push('bottom 0.2s linier');
-	}
-	else {
-		transitions.push('left 0.2s linier');
-		transitions.push('right 0.2s linier');
-	}
-	style.transition   = style.MozTransition = transitions.join(',');
+	style.transition   = style.MozTransition = 'opacity ' + ANIMATION_DURATION_OPACITY + 'ms ease';
 	style.margin = 'auto';
 	return thumb;
 }
