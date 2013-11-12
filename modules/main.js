@@ -190,10 +190,12 @@ function handleTouchEnd(aEvent) {
 	var content = aEvent.originalTarget;
 	content = content.defaultView || content.ownerDocument.defaultView;
 	clearThumbsWithDelay(content, chrome);
-	aEvent.stopPropagation();
-	aEvent.preventDefault();
-	var chrome = WindowManager.getWindow(TYPE_BROWSER);
-	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
+	if (state == STATE_HANDLING) {
+		aEvent.stopPropagation();
+		aEvent.preventDefault();
+		let chrome = WindowManager.getWindow(TYPE_BROWSER);
+		chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
+	}
 	content.setTimeout(function() {
 		state = STATE_NONE;
 	}, 0);
