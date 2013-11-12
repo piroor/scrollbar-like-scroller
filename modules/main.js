@@ -189,11 +189,11 @@ function handleTouchEnd(aEvent) {
 	scrollVertically = false;
 	var content = aEvent.originalTarget;
 	content = content.defaultView || content.ownerDocument.defaultView;
+	var chrome = WindowManager.getWindow(TYPE_BROWSER);
 	clearThumbsWithDelay(content, chrome);
 	if (state == STATE_HANDLING) {
 		aEvent.stopPropagation();
 		aEvent.preventDefault();
-		let chrome = WindowManager.getWindow(TYPE_BROWSER);
 		chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
 	}
 	content.setTimeout(function() {
@@ -358,8 +358,8 @@ function hideThumb(aWindow, aThumbs) {
 	if (thumb) {
 		thumb.style.opacity = 0;
 		aWindow.setTimeout(function() {
-			thumb.parentNode.removeChild(thumb);
 			aThumbs.delete(aWindow);
+			thumb.parentNode.removeChild(thumb);
 		}, ANIMATION_DURATION_OPACITY);
 	}
 }
