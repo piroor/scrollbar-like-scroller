@@ -32,9 +32,8 @@ const THUMB_BORDER_WIDTH  = 4;
 const THUMB_BORDER_RADIUS = 8;
 
 const STATE_NONE     = 0;
-const STATE_DETECTED = 1;
-const STATE_READY    = 2;
-const STATE_HANDLING = 3;
+const STATE_READY    = 1;
+const STATE_HANDLING = 2;
 
 const AXIS_VERTICALLY   = 1;
 const AXIS_HORIZONTALLY = 2;
@@ -165,7 +164,6 @@ function handleTouchStart(aEvent) {
 	scrollHorizontally = false;
 	scrollVertically = false;
 	startTime = Date.now();
-	state = STATE_DETECTED;
 	if (parsed.canScrollVertically) {
 		scrollVertically = parsed.onVerticalThumb;
 		showVerticalThumb(content, parsed, 0.5);
@@ -211,6 +209,8 @@ function handleTouchMove(aEvent) {
 		showHorizontalThumb(content, parsed, 1);
 	if (scrollVertically)
 		showVerticalThumb(content, parsed, 1);
+	if (!scrollHorizontally && !scrollVertically)
+		return;
 	updateScrollPosition(content, parsed);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
