@@ -332,8 +332,11 @@ function updateThumbAppearance(aParams) {
 function hideThumb(aWindow, aThumbs) {
 	var thumb = aThumbs.get(aWindow);
 	if (thumb) {
-		thumb.parentNode.removeChild(thumb);
-		aThumbs.delete(aWindow);
+		thumb.style.opacity = 0;
+		aWindow.setTimeout(function() {
+			thumb.parentNode.removeChild(thumb);
+			aThumbs.delete(aWindow);
+		}, ANIMATION_DURATION_OPACITY);
 	}
 }
 
@@ -348,7 +351,7 @@ function createThumb(aWindow, aAxis) {
 	style.border       = THUMB_BORDER_WIDTH + 'px solid rgba(255, 255, 255, 0.75)';
 	style.borderRadius = style.MozBorderRadius = THUMB_BORDER_RADIUS + 'px';
 	style.position     = 'fixed';
-	var transitions = ['opacity 0.2s ease'];
+	var transitions = ['opacity ' + ANIMATION_DURATION_OPACITY + 'ms ease'];
 	if (aAxis == AXIS_VERTICALLY) {
 		transitions.push('top 0.2s linier');
 		transitions.push('bottom 0.2s linier');
