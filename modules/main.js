@@ -178,6 +178,19 @@ function handleTouchStart(aEvent) {
 	}
 	if (!scrollHorizontally && !scrollVertically)
 		return;
+	if (myPrefs.startDelay) {
+		let timer = showHideThumbsTimers.get(content);
+		if (timer)
+			content.clearTimeout(timer);
+		timer = content.setTimeout(function() {
+			showHideThumbsTimers.delete(content);
+			if (scrollVertically)
+				showVerticalThumb(content, parsed, 1);
+			if (scrollHorizontally)
+				showHorizontalThumb(content, parsed, 1);
+		}, myPrefs.startDelay);
+		showHideThumbsTimers.set(content, timer);
+	}
 	state = STATE_READY;
 }
 
@@ -190,7 +203,7 @@ function handleTouchEnd(aEvent) {
 	var content = aEvent.originalTarget;
 	content = content.defaultView || content.ownerDocument.defaultView;
 	var chrome = WindowManager.getWindow(TYPE_BROWSER);
-	clearThumbsWithDelay(content, chrome);
+	clearThumbsWithDelay(content);
 	if (state == STATE_HANDLING) {
 		aEvent.stopPropagation();
 		aEvent.preventDefault();
@@ -218,7 +231,7 @@ function handleTouchMove(aEvent) {
 			return;
 		}
 		state = STATE_HANDLING;
-		cancelClearThumbs(chrome);
+		cancelThumbsShowHide(content);
 	}
 	if (scrollVertically) {
 		showVerticalThumb(content, parsed, 1);
@@ -253,29 +266,27 @@ function handleScrollEvent(aEvent) {
 		showHorizontalThumb(content, parsed, 0.5);
 	if (parsed.canScrollVertically)
 		showVerticalThumb(content, parsed, 0.5);
-	clearThumbsWithDelay(content, chrome);
+	clearThumbsWithDelay(content);
 }
 
-var clearThumbsTimers = new WeakMap();
-function clearThumbsWithDelay(aWindow, aChromeWindow) {
-	var chrome = aChromeWindow || WindowManager.getWindow(TYPE_BROWSER);
-	var timer = clearThumbsTimers.get(chrome);
+var showHideThumbsTimers = new WeakMap();
+function clearThumbsWithDelay(aWindow) {
+	var timer = showHideThumbsTimers.get(aWindow);
 	if (timer)
-		chrome.clearTimeout(timer);
-	timer = chrome.setTimeout(function() {
+		aWindow.clearTimeout(timer);
+	timer = aWindow.setTimeout(function() {
 		hideThumb(aWindow, horizontalThumbs);
 		hideThumb(aWindow, verticalThumbs);
-		clearThumbsTimers.delete(chrome);
+		showHideThumbsTimers.delete(aWindow);
 	}, 500);
-	clearThumbsTimers.set(chrome, timer);
+	showHideThumbsTimers.set(aWindow, timer);
 }
 
-function cancelClearThumbs(aChromeWindow) {
-	var chrome = aChromeWindow || WindowManager.getWindow(TYPE_BROWSER);
-	var timer = clearThumbsTimers.get(chrome);
+function cancelThumbsShowHide(aWindow) {
+	var timer = showHideThumbsTimers.get(aWindow);
 	if (timer) {
-		chrome.clearTimeout(timer);
-		clearThumbsTimers.delete(chrome);
+		aWindow.clearTimeout(timer);
+		showHideThumbsTimers.delete(aWindow);
 	}
 }
 
