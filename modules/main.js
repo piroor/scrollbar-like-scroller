@@ -267,13 +267,17 @@ function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
-	if (startY < aParsedTouch.height / 3) {
+	if (startY < aParsedTouch.height / 3 && aParsedTouch.topArea > 0) {
 		style.top    = 0;
 		style.bottom = 'auto';
 	}
-	else {
+	else if (aParsedTouch.bottomArea > 0) {
 		style.top    = 'auto';
 		style.bottom = 0;
+	}
+	else {
+		style.display = 'none';
+		return thumb;
 	}
 	style.display = 'block';
 	style.left = (aParsedTouch.hThumbStart / aParsedTouch.zoom) + 'px';
@@ -294,13 +298,17 @@ function showVerticalThumb(aWindow, aParsedTouch, aOpacity) {
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
-	if (startX < aParsedTouch.width / 3) {
+	if (startX < aParsedTouch.width / 3 && aParsedTouch.leftArea > 0) {
 		style.left  = 0;
 		style.right = 'auto';
 	}
-	else {
+	else if (aParsedTouch.rightArea > 0) {
 		style.left  = 'auto';
 		style.right = 0;
+	}
+	else {
+		style.display = 'none';
+		return thumb;
 	}
 	style.display = 'block';
 	style.top = (aParsedTouch.vThumbStart / aParsedTouch.zoom) + 'px';
