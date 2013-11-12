@@ -236,6 +236,12 @@ function handleTouchMove(aEvent) {
 		scrollState = STATE_HANDLING;
 		cancelThumbsShowHide(content);
 	}
+	if (scrollHorizontally || scrollVertically) {
+		updateScrollPosition(content, state);
+		aEvent.stopPropagation();
+		aEvent.preventDefault();
+		chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
+	}
 	if (scrollVertically) {
 		showVerticalThumb(content, state, 1);
 		hideThumb(content, horizontalThumbs);
@@ -244,12 +250,6 @@ function handleTouchMove(aEvent) {
 		showHorizontalThumb(content, state, 1);
 		hideThumb(content, verticalThumbs);
 	}
-	if (!scrollHorizontally && !scrollVertically)
-		return;
-	updateScrollPosition(content, state);
-	aEvent.stopPropagation();
-	aEvent.preventDefault();
-	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
 }
 
 function tryActivateScrollbar(aState) {
