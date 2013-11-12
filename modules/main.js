@@ -26,7 +26,7 @@ Cu.import('resource://gre/modules/Services.jsm');
 const TYPE_BROWSER = 'navigator:browser';
 
 const MIN_SCROLLABLE_SIZE = 0.1;
-const MAX_SCROLLBAR_SIZE = 0.5;
+const MAX_SCROLLBAR_SIZE = 0.3;
 
 const THUMB_BORDER_WIDTH  = 4;
 const THUMB_BORDER_RADIUS = 8;
