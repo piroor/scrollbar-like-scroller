@@ -38,6 +38,8 @@ const STATE_HANDLING = 2;
 const AXIS_VERTICALLY   = 1;
 const AXIS_HORIZONTALLY = 2;
 
+const ANIMATION_DURATION_OPACITY = 200;
+
 function parseTouchEvent(aEvent) {
 	var touch = aEvent.touches[0];
 	if (!touch)
