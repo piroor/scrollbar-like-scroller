@@ -51,10 +51,12 @@ function parseTouchEvent(aEvent) {
 	parsed.leftEdgeTouching = parsed.canScrollVertically && parsed.eventX <= parsed.leftArea;
 	parsed.rightEdgeTouching = parsed.canScrollVertically && parsed.width - parsed.eventX <= parsed.rightArea;
 	parsed.canScrollVertically = parsed.leftEdgeTouching || parsed.rightEdgeTouching;
+	parsed.onVerticalThumb = parsed.eventY >= parsed.vThumbStart && parsed.eventY <= parsed.vThumbEnd;
 
 	parsed.topEdgeTouching = parsed.canScrollHorizontally && parsed.eventY <= parsed.topArea;
 	parsed.bottomEdgeTouching = parsed.canScrollHorizontally && parsed.height - parsed.eventY <= parsed.bottomArea;
 	parsed.canScrollHorizontally = parsed.topEdgeTouching || parsed.bottomEdgeTouching;
+	parsed.onHorizontalThumb = parsed.eventX >= parsed.hThumbStart && parsed.eventX <= parsed.hThumbEnd;
 
 	return [chrome, content, parsed];
 }
@@ -168,11 +170,11 @@ function handleTouchStart(aEvent) {
 	if (myPrefs.thumbEnabled) {
 		state = STATE_DETECTED;
 		if (parsed.canScrollVertically) {
-			scrollVertically = parsed.eventY >= parsed.vThumbStart && parsed.eventY <= parsed.vThumbEnd;
+			scrollVertically = parsed.onVerticalThumb;
 			showVerticalThumb(content, parsed, 0.5);
 		}
 		if (parsed.canScrollHorizontally) {
-			scrollHorizontally = parsed.eventX >= parsed.hThumbStart && parsed.eventX <= parsed.hThumbEnd;
+			scrollHorizontally = parsed.onHorizontalThumb;
 			showHorizontalThumb(content, parsed, 0.5);
 		}
 		if (!scrollHorizontally && !scrollVertically)
@@ -190,8 +192,7 @@ function handleTouchEnd(aEvent) {
 	scrollVertically = false;
 	var content = aEvent.originalTarget;
 	content = content.defaultView || content.ownerDocument.defaultView;
-	hideThumb(content, horizontalThumbs);
-	hideThumb(content, verticalThumbs);
+	clearThumbsWithDelay(content, chrome);
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 	var chrome = WindowManager.getWindow(TYPE_BROWSER);
@@ -215,11 +216,7 @@ function handleTouchMove(aEvent) {
 			return;
 		}
 		state = STATE_HANDLING;
-		let timer = clearThumbsTimers.get(chrome);
-		if (timer) {
-			chrome.clearTimeout(timer);
-			clearThumbsTimers.delete(chrome);
-		}
+		cancelClearThumbs(chrome);
 	}
 	if (scrollHorizontally)
 		showHorizontalThumb(content, parsed, 1);
@@ -242,7 +239,6 @@ function tryActivateScrollbar(aParsedTouch) {
 	return true;
 }
 
-var clearThumbsTimers = new WeakMap();
 function handleScrollEvent(aEvent) {
 	if (state != STATE_NONE)
 		return;
@@ -251,16 +247,30 @@ function handleScrollEvent(aEvent) {
 		showHorizontalThumb(content, parsed, 0.5);
 	if (parsed.canScrollVertically)
 		showVerticalThumb(content, parsed, 0.5);
+	clearThumbsWithDelay(content, chrome);
+}
 
+var clearThumbsTimers = new WeakMap();
+function clearThumbsWithDelay(aWindow, aChromeWindow) {
+	var chrome = aChromeWindow || WindowManager.getWindow(TYPE_BROWSER);
 	var timer = clearThumbsTimers.get(chrome);
 	if (timer)
 		chrome.clearTimeout(timer);
 	timer = chrome.setTimeout(function() {
-		hideThumb(content, horizontalThumbs);
-		hideThumb(content, verticalThumbs);
+		hideThumb(aWindow, horizontalThumbs);
+		hideThumb(aWindow, verticalThumbs);
 		clearThumbsTimers.delete(chrome);
 	}, 500);
 	clearThumbsTimers.set(chrome, timer);
+}
+
+function cancelClearThumbs(aChromeWindow) {
+	var chrome = aChromeWindow || WindowManager.getWindow(TYPE_BROWSER);
+	var timer = clearThumbsTimers.get(chrome);
+	if (timer) {
+		chrome.clearTimeout(timer);
+		clearThumbsTimers.delete(chrome);
+	}
 }
 
 var horizontalThumbs = new WeakMap();
@@ -268,7 +278,7 @@ var verticalThumbs = new WeakMap();
 
 function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 	if (!myPrefs.thumbEnabled)
-		return;
+		return null;
 	var thumb = horizontalThumbs.get(aWindow);
 	if (!thumb) {
 		thumb = createThumb(aWindow);
@@ -292,11 +302,12 @@ function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 	style.display = 'block';
 	style.left = (aParsedTouch.hThumbStart / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
+	return thumb;
 }
 
 function showVerticalThumb(aWindow, aParsedTouch, aOpacity) {
 	if (!myPrefs.thumbEnabled)
-		return;
+		return null;
 	var thumb = verticalThumbs.get(aWindow);
 	if (!thumb) {
 		thumb = createThumb(aWindow);
@@ -320,6 +331,7 @@ function showVerticalThumb(aWindow, aParsedTouch, aOpacity) {
 	style.display = 'block';
 	style.top = (aParsedTouch.vThumbStart / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
+	return thumb;
 }
 
 function updateThumbAppearance(aParams) {
