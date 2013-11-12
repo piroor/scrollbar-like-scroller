@@ -182,7 +182,6 @@ function handleTouchStart(aEvent) {
 function handleTouchEnd(aEvent) {
 	if (state == STATE_NONE)
 		return;
-	state = STATE_NONE;
 	startTime = -1;
 	scrollHorizontally = false;
 	scrollVertically = false;
@@ -193,6 +192,9 @@ function handleTouchEnd(aEvent) {
 	aEvent.preventDefault();
 	var chrome = WindowManager.getWindow(TYPE_BROWSER);
 	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
+	content.setTimeout(function() {
+		state = STATE_NONE;
+	}, 0);
 }
 
 function handleTouchMove(aEvent) {
