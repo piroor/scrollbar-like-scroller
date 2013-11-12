@@ -147,14 +147,14 @@ function handleTouchStart(aEvent) {
 	if (aEvent.touches.length != 1)
 		return;
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
+	startX = parsed.eventX;
+	startY = parsed.eventY;
 	if (!parsed.leftEdgeTouching &&
 		!parsed.rightEdgeTouching &&
 		!parsed.bottomEdgeTouching)
 		return;
 	scrollHorizontally = false;
 	scrollVertically = false;
-	startX = parsed.eventX;
-	startY = parsed.eventY;
 	startTime = Date.now();
 	if (myPrefs.thumbEnabled) {
 		state = STATE_DETECTED;
@@ -177,8 +177,6 @@ function handleTouchEnd(aEvent) {
 		return;
 	state = STATE_NONE;
 	startTime = -1;
-	startX = -1;
-	startY = -1;
 	scrollHorizontally = false;
 	scrollVertically = false;
 	var content = aEvent.originalTarget;
@@ -295,7 +293,14 @@ function showVerticalThumb(aWindow, aParsedTouch, aOpacity) {
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
-	style.right = 0;
+	if (startX < aParsedTouch.width / 3) {
+		style.left  = 0;
+		style.right = 'auto';
+	}
+	else {
+		style.left  = 'auto';
+		style.right = 0;
+	}
 	style.display = 'block';
 	style.top = (aParsedTouch.vThumbStart / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
