@@ -31,6 +31,14 @@ const TYPE_BROWSER = 'navigator:browser';
 const MIN_SCROLLABLE_SIZE = 0.1;
 const MAX_SCROLLBAR_SIZE = 0.5;
 
+const THUMB_BORDER_WIDTH  = 4;
+const THUMB_BORDER_RADIUS = 8;
+
+const STATE_NONE     = 0;
+const STATE_DETECTED = 1;
+const STATE_READY    = 2;
+const STATE_HANDLING = 3;
+
 function parseTouchEvent(aEvent) {
 	var touch = aEvent.touches[0];
 	if (!touch)
@@ -136,10 +144,6 @@ function calculateThumbPositionPercentage(aOffset, aSize, aPosition) {
 	return Math.min(Math.max(0, percentage), 1)
 }
 
-var STATE_NONE     = 0;
-var STATE_DETECTED = 1;
-var STATE_READY    = 2;
-var STATE_HANDLING = 3;
 var state = STATE_NONE;
 var startTime = -1;
 var startX = -1;
@@ -321,8 +325,8 @@ function updateThumbAppearance(aParams) {
 	var parsed = aParams.parsedTouch;
 	style.minHeight = (aParams.height / parsed.zoom) + 'px';
 	style.minWidth = (aParams.width / parsed.zoom) + 'px';
-	style.borderWidth = (thumbBorderWidth / parsed.zoom) + 'px';
-	style.borderRadius = style.MozBorderRadius = (thumbBorderRadius / parsed.zoom) + 'px';
+	style.borderWidth = (THUMB_BORDER_WIDTH / parsed.zoom) + 'px';
+	style.borderRadius = style.MozBorderRadius = (THUMB_BORDER_RADIUS / parsed.zoom) + 'px';
 }
 
 function hideThumb(aWindow, aThumbs) {
@@ -333,8 +337,6 @@ function hideThumb(aWindow, aThumbs) {
 	}
 }
 
-var thumbBorderWidth = 4;
-var thumbBorderRadius = 8;
 function createThumb(aWindow) {
 	var thumb = aWindow.document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
 	aWindow.document.documentElement.appendChild(thumb);
@@ -342,8 +344,8 @@ function createThumb(aWindow) {
 	style.display      = 'none';
 	style.zIndex       = 65000;
 	style.background   = 'rgba(0, 0, 0, 0.5)';
-	style.border       = thumbBorderWidth + 'px solid rgba(255, 255, 255, 0.75)';
-	style.borderRadius = style.MozBorderRadius = thumbBorderRadius + 'px';
+	style.border       = THUMB_BORDER_WIDTH + 'px solid rgba(255, 255, 255, 0.75)';
+	style.borderRadius = style.MozBorderRadius = THUMB_BORDER_RADIUS + 'px';
 	style.position     = 'fixed';
 	style.transition   = style.MozTransition = [
 		'top 0.2s linier',
