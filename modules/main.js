@@ -17,7 +17,6 @@ myPrefs.define('offsetX',        '0.05', 'offset.x');
 myPrefs.define('offsetMinX',     64,     'offset.minX');
 myPrefs.define('offsetY',        '0.05', 'offset.y');
 myPrefs.define('offsetMinY',     64,     'offset.minY');
-myPrefs.define('scrollDelay',    50);
 myPrefs.define('thumbEnabled',      true, 'thumb.enabled');
 myPrefs.define('thumbExpandedArea', 16,   'thumb.expandedArea');
 myPrefs.define('vThumbWidth',       38,   'thumb.vertical.width');
