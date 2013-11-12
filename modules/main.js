@@ -414,7 +414,6 @@ function handleWindow(aWindow)
 	aWindow.addEventListener('touchend', handleTouchEnd, true);
 	aWindow.addEventListener('touchmove', handleTouchMove, true);
 	aWindow.addEventListener('scroll', handleScrollEvent, true);
-	aWindow.addEventListener('MozScrolledAreaChanged', handleScrollEvent, true);
 }
 
 WindowManager.getWindows(TYPE_BROWSER).forEach(handleWindow);
@@ -427,7 +426,6 @@ function shutdown()
 		aWindow.removeEventListener('touchend', handleTouchEnd, true);
 		aWindow.removeEventListener('touchmove', handleTouchMove, true);
 		aWindow.removeEventListener('scroll', handleScrollEvent, true);
-		aWindow.removeEventListener('MozScrolledAreaChanged', handleScrollEvent, true);
 	});
 
 	clearThumbsTimers = undefined;
