@@ -5,6 +5,7 @@
 <!ENTITY config.areaSize.description  "警告：大きすぎる値を設定すると通常のスクロール操作を行えなく恐れがありますので、注意して設定して下さい！">
 <!ENTITY config.areaSize.left.label   "左端">
 <!ENTITY config.areaSize.right.label  "右端">
+<!ENTITY config.areaSize.top.label    "上端">
 <!ENTITY config.areaSize.bottom.label "下端">
 
 <!ENTITY config.thumbEnabled.label   "スクロールバーのつまみを表示する">

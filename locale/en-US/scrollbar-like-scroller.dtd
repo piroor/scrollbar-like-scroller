@@ -5,6 +5,7 @@
 <!ENTITY config.areaSize.description  "CAUTION: Be careful! Too large value will break regular scroll behavior.">
 <!ENTITY config.areaSize.left.label   "Left">
 <!ENTITY config.areaSize.right.label  "Right">
+<!ENTITY config.areaSize.top.label    "Top">
 <!ENTITY config.areaSize.bottom.label "Bottom">
 
 <!ENTITY config.thumbEnabled.label   "Show thumb for toolbars">

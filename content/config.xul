@@ -17,6 +17,9 @@
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.right"
 		type="integer"
 		title="&config.areaSize.right.label;"/>
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.top"
+		type="integer"
+		title="&config.areaSize.top.label;"/>
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.bottom"
 		type="integer"
 		title="&config.areaSize.bottom.label;"/>

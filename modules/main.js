@@ -9,6 +9,7 @@ var myPrefs = prefs.createStore('extensions.scrollbar-like-scroller@piro.sakura.
 myPrefs.define('debug',          false);
 myPrefs.define('areaSizeLeft',   64, 'areaSize.left');
 myPrefs.define('areaSizeRight',  64, 'areaSize.right');
+myPrefs.define('areaSizeTop',    64, 'areaSize.top');
 myPrefs.define('areaSizeBottom', 64, 'areaSize.buttom');
 myPrefs.define('startThreshold', 12);
 myPrefs.define('startDelay',     150);
@@ -41,6 +42,7 @@ function parseTouchEvent(aEvent) {
 	parsed.eventY = touch.clientY * parsed.zoom;
 	parsed.leftEdgeTouching = parsed.canScrollVertically && parsed.eventX <= parsed.leftArea;
 	parsed.rightEdgeTouching = parsed.canScrollVertically && parsed.width - parsed.eventX <= parsed.rightArea;
+	parsed.topEdgeTouching = parsed.canScrollHorizontally && parsed.eventY <= parsed.topArea;
 	parsed.bottomEdgeTouching = parsed.canScrollHorizontally && parsed.height - parsed.eventY <= parsed.bottomArea;
 
 	return [chrome, content, parsed];
@@ -65,6 +67,7 @@ function parseClientEvent(aEvent) {
 	};
 	parsed.leftArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeLeft);
 	parsed.rightArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeRight);
+	parsed.topArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeTop);
 	parsed.bottomArea = Math.min(viewport.height * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeBottom);
 	parsed.canScrollHorizontally = parsed.scrollMaxX / viewport.zoom / viewport.width > MIN_SCROLLABLE_SIZE;
 	parsed.canScrollVertically = parsed.scrollMaxY / viewport.zoom / viewport.height > MIN_SCROLLABLE_SIZE;
@@ -151,6 +154,7 @@ function handleTouchStart(aEvent) {
 	startY = parsed.eventY;
 	if (!parsed.leftEdgeTouching &&
 		!parsed.rightEdgeTouching &&
+		!parsed.topEdgeTouching &&
 		!parsed.bottomEdgeTouching)
 		return;
 	scrollHorizontally = false;
@@ -162,7 +166,7 @@ function handleTouchStart(aEvent) {
 			scrollVertically = parsed.eventY >= parsed.vThumbStart && parsed.eventY <= parsed.vThumbEnd;
 			showVerticalThumb(content, parsed, 0.5);
 		}
-		if (parsed.bottomEdgeTouching) {
+		if (parsed.topEdgeTouching || parsed.bottomEdgeTouching) {
 			scrollHorizontally = parsed.eventX >= parsed.hThumbStart && parsed.eventX <= parsed.hThumbEnd;
 			showHorizontalThumb(content, parsed, 0.5);
 		}
@@ -226,7 +230,7 @@ function tryActivateScrollbar(aParsedTouch) {
 	if (Date.now() - startTime < myPrefs.startDelay)
 		return false;
 	var threshold = myPrefs.startThreshold;
-	scrollHorizontally = scrollHorizontally && aParsedTouch.bottomEdgeTouching && Math.abs(aParsedTouch.eventX - startX) >= threshold;
+	scrollHorizontally = scrollHorizontally && (aParsedTouch.topEdgeTouching || aParsedTouch.bottomEdgeTouching) && Math.abs(aParsedTouch.eventX - startX) >= threshold;
 	scrollVertically = scrollVertically && (aParsedTouch.leftEdgeTouching || aParsedTouch.rightEdgeTouching) && Math.abs(aParsedTouch.eventY - startY) >= threshold;
 	if (!scrollHorizontally && !scrollVertically)
 		return false;
@@ -272,7 +276,14 @@ function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 		parsedTouch : aParsedTouch
 	});
 	var style = thumb.style;
-	style.bottom = 0;
+	if (startY < aParsedTouch.height / 3) {
+		style.top    = 0;
+		style.bottom = 'auto';
+	}
+	else {
+		style.top    = 'auto';
+		style.bottom = 0;
+	}
 	style.display = 'block';
 	style.left = (aParsedTouch.hThumbStart / aParsedTouch.zoom) + 'px';
 	style.opacity = aOpacity;
