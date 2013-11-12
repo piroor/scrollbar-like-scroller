@@ -205,10 +205,14 @@ function handleTouchMove(aEvent) {
 		state = STATE_HANDLING;
 		cancelClearThumbs(chrome);
 	}
-	if (scrollHorizontally)
-		showHorizontalThumb(content, parsed, 1);
-	if (scrollVertically)
+	if (scrollVertically) {
 		showVerticalThumb(content, parsed, 1);
+		hideThumb(content, horizontalThumbs);
+	}
+	if (scrollHorizontally) {
+		showHorizontalThumb(content, parsed, 1);
+		hideThumb(content, verticalThumbs);
+	}
 	if (!scrollHorizontally && !scrollVertically)
 		return;
 	updateScrollPosition(content, parsed);
