@@ -47,10 +47,14 @@ function parseTouchEvent(aEvent) {
 	var [chrome, content, parsed] = parseClientEvent(aEvent);
 	parsed.eventX = touch.clientX * parsed.zoom;
 	parsed.eventY = touch.clientY * parsed.zoom;
+
 	parsed.leftEdgeTouching = parsed.canScrollVertically && parsed.eventX <= parsed.leftArea;
 	parsed.rightEdgeTouching = parsed.canScrollVertically && parsed.width - parsed.eventX <= parsed.rightArea;
+	parsed.canScrollVertically = parsed.leftEdgeTouching || parsed.rightEdgeTouching;
+
 	parsed.topEdgeTouching = parsed.canScrollHorizontally && parsed.eventY <= parsed.topArea;
 	parsed.bottomEdgeTouching = parsed.canScrollHorizontally && parsed.height - parsed.eventY <= parsed.bottomArea;
+	parsed.canScrollHorizontally = parsed.topEdgeTouching || parsed.bottomEdgeTouching;
 
 	return [chrome, content, parsed];
 }
@@ -155,21 +159,19 @@ function handleTouchStart(aEvent) {
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	startX = parsed.eventX;
 	startY = parsed.eventY;
-	if (!parsed.leftEdgeTouching &&
-		!parsed.rightEdgeTouching &&
-		!parsed.topEdgeTouching &&
-		!parsed.bottomEdgeTouching)
+	if (!parsed.canScrollVertically &&
+		!parsed.canScrollHorizontally)
 		return;
 	scrollHorizontally = false;
 	scrollVertically = false;
 	startTime = Date.now();
 	if (myPrefs.thumbEnabled) {
 		state = STATE_DETECTED;
-		if (parsed.leftEdgeTouching || parsed.rightEdgeTouching) {
+		if (parsed.canScrollVertically) {
 			scrollVertically = parsed.eventY >= parsed.vThumbStart && parsed.eventY <= parsed.vThumbEnd;
 			showVerticalThumb(content, parsed, 0.5);
 		}
-		if (parsed.topEdgeTouching || parsed.bottomEdgeTouching) {
+		if (parsed.canScrollHorizontally) {
 			scrollHorizontally = parsed.eventX >= parsed.hThumbStart && parsed.eventX <= parsed.hThumbEnd;
 			showHorizontalThumb(content, parsed, 0.5);
 		}
@@ -233,8 +235,8 @@ function tryActivateScrollbar(aParsedTouch) {
 	if (Date.now() - startTime < myPrefs.startDelay)
 		return false;
 	var threshold = myPrefs.startThreshold;
-	scrollHorizontally = scrollHorizontally && (aParsedTouch.topEdgeTouching || aParsedTouch.bottomEdgeTouching) && Math.abs(aParsedTouch.eventX - startX) >= threshold;
-	scrollVertically = scrollVertically && (aParsedTouch.leftEdgeTouching || aParsedTouch.rightEdgeTouching) && Math.abs(aParsedTouch.eventY - startY) >= threshold;
+	scrollHorizontally = scrollHorizontally && aParsedTouch.canScrollHorizontally && Math.abs(aParsedTouch.eventX - startX) >= threshold;
+	scrollVertically = scrollVertically && aParsedTouch.canScrollVertically && Math.abs(aParsedTouch.eventY - startY) >= threshold;
 	if (!scrollHorizontally && !scrollVertically)
 		return false;
 	return true;
