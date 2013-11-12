@@ -9,7 +9,7 @@
 <!ENTITY config.areaSize.bottom.label "下端">
 
 <!ENTITY config.startThreshold.title       "つまみの操作を無視するしきい値">
-<!ENTITY config.startThreshold.description "以下の時間以内または以下の距離未満の操作は通常のスワイプ操作と見なされます。">
+<!ENTITY config.startThreshold.description "以下の時間以内または以下の距離以内の操作は通常のスワイプ操作と見なされます。">
 <!ENTITY config.startDelay.label              "時間（ミリ秒）">
 <!ENTITY config.startThreshold.label          "距離">
 
