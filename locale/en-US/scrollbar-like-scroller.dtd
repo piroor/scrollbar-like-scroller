@@ -1,17 +1,11 @@
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-<!ENTITY config.areaSize.title        "Sensitive area on viewport edges">
+<!ENTITY config.areaSize.title        "Size of vertual scrollbar on viewport edges">
 <!ENTITY config.areaSize.description  "CAUTION: Be careful! Too large value will break regular scroll behavior.">
 <!ENTITY config.areaSize.left.label   "Left">
 <!ENTITY config.areaSize.right.label  "Right">
 <!ENTITY config.areaSize.top.label    "Top">
 <!ENTITY config.areaSize.bottom.label "Bottom">
-
-<!ENTITY config.thumbEnabled.label   "Show thumb for toolbars">
-
-<!ENTITY config.thumbDisabled.title  "Triggers to start scrollbar behavior when thumbs are disabled">
-<!ENTITY config.startDelay.label     "Start virtual scrollbar when you swipe the screen edge after a delay (msec)">
-<!ENTITY config.startThreshold.label "and dragging with more than the following distance">
 
 <!ENTITY config.debug.label "Debug mode">

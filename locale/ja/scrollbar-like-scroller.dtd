@@ -1,17 +1,11 @@
 <!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-<!ENTITY config.areaSize.title        "画面端で反応する領域の大きさ">
+<!ENTITY config.areaSize.title        "画面端の仮想的なスクロールバーの幅">
 <!ENTITY config.areaSize.description  "警告：大きすぎる値を設定すると通常のスクロール操作を行えなく恐れがありますので、注意して設定して下さい！">
 <!ENTITY config.areaSize.left.label   "左端">
 <!ENTITY config.areaSize.right.label  "右端">
 <!ENTITY config.areaSize.top.label    "上端">
 <!ENTITY config.areaSize.bottom.label "下端">
-
-<!ENTITY config.thumbEnabled.label   "スクロールバーのつまみを表示する">
-
-<!ENTITY config.thumbDisabled.title  "つまみが無効な時にスクロールバー風の動作を開始するきっかけ">
-<!ENTITY config.startDelay.label     "以下の時間（単位：ミリ秒）以上長押ししてから">
-<!ENTITY config.startThreshold.label "以下の距離以上のドラッグ操作を行った時にスクロールバー風の動作を始める">
 
 <!ENTITY config.debug.label "デバッグモード">

@@ -4,10 +4,6 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 <!DOCTYPE vbox SYSTEM "chrome://scrollbar-like-scroller/locale/scrollbar-like-scroller.dtd">
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.thumb.enabled"
-		type="bool"
-		title="&config.thumbEnabled.label;"/>
-
 	<setting type="control"
 		title="&config.areaSize.title;"
 		desc="&config.areaSize.description;"/>
@@ -23,14 +19,6 @@
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.bottom"
 		type="integer"
 		title="&config.areaSize.bottom.label;"/>
-
-	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.startDelay"
-		type="integer"
-		title="&config.startDelay.label;"/>
-
-	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.startThreshold"
-		type="integer"
-		title="&config.startThreshold.label;"/>
 
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.debug"
 		type="bool"

@@ -11,13 +11,10 @@ myPrefs.define('areaSizeLeft',   64, 'areaSize.left');
 myPrefs.define('areaSizeRight',  64, 'areaSize.right');
 myPrefs.define('areaSizeTop',    64, 'areaSize.top');
 myPrefs.define('areaSizeBottom', 64, 'areaSize.buttom');
-myPrefs.define('startThreshold', 12);
-myPrefs.define('startDelay',     150);
 myPrefs.define('offsetX',        '0.05', 'offset.x');
 myPrefs.define('offsetMinX',     64,     'offset.minX');
 myPrefs.define('offsetY',        '0.05', 'offset.y');
 myPrefs.define('offsetMinY',     64,     'offset.minY');
-myPrefs.define('thumbEnabled',      true, 'thumb.enabled');
 myPrefs.define('thumbExpandedArea', 16,   'thumb.expandedArea');
 myPrefs.define('vThumbWidth',       38,   'thumb.vertical.width');
 myPrefs.define('vThumbMinHeight',   80,   'thumb.vertical.minHeight');
@@ -85,37 +82,35 @@ function parseClientEvent(aEvent) {
 	parsed.canScrollHorizontally = parsed.scrollMaxX / viewport.zoom / viewport.width > MIN_SCROLLABLE_SIZE;
 	parsed.canScrollVertically = parsed.scrollMaxY / viewport.zoom / viewport.height > MIN_SCROLLABLE_SIZE;
 
-	if (myPrefs.thumbEnabled) {
-		let expandedArea = myPrefs.thumbExpandedArea * viewport.zoom;
+	var expandedArea = myPrefs.thumbExpandedArea * viewport.zoom;
 
-		let vThumbStart     = parsed.scrollY - expandedArea;
-		let vThumbEnd       = parsed.scrollY + parsed.height + expandedArea;
-		let vThumbHeight    = (vThumbEnd - vThumbStart) / parsed.pageHeight * parsed.height;
-		let vThumbMinHeight = myPrefs.vThumbMinHeight;
-		if (vThumbHeight < vThumbMinHeight) {
-			let expand = (vThumbMinHeight - vThumbHeight) / parsed.height * parsed.pageHeight / 2;
-			vThumbStart -= expand;
-			vThumbEnd   += expand;
-		}
-		parsed.vThumbStart  = vThumbStart / parsed.pageHeight * parsed.height;
-		parsed.vThumbEnd    = vThumbEnd / parsed.pageHeight * parsed.height;
-		parsed.vThumbHeight = parsed.vThumbEnd - parsed.vThumbStart;
-		parsed.vThumbWidth  = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.vThumbWidth);
-
-		let hThumbStart    = parsed.scrollX - expandedArea;
-		let hThumbEnd      = parsed.scrollX + parsed.width + expandedArea;
-		let hThumbWidth    = (hThumbEnd - hThumbStart) / parsed.pageWidth * parsed.width;
-		let hThumbMinWidth = myPrefs.hThumbMinWidth;
-		if (hThumbWidth < hThumbMinWidth) {
-			let expand = (hThumbMinWidth - hThumbWidth) / parsed.width * parsed.pageWidth / 2;
-			hThumbStart -= expand;
-			hThumbEnd   += expand;
-		}
-		parsed.hThumbStart  = hThumbStart / parsed.pageWidth * parsed.width;
-		parsed.hThumbEnd    = hThumbEnd / parsed.pageWidth * parsed.width;
-		parsed.hThumbWidth  = parsed.hThumbEnd - parsed.hThumbStart;
-		parsed.hThumbHeight = Math.min(viewport.height * MAX_SCROLLBAR_SIZE, myPrefs.hThumbHeight);
+	var vThumbStart     = parsed.scrollY - expandedArea;
+	var vThumbEnd       = parsed.scrollY + parsed.height + expandedArea;
+	var vThumbHeight    = (vThumbEnd - vThumbStart) / parsed.pageHeight * parsed.height;
+	var vThumbMinHeight = myPrefs.vThumbMinHeight;
+	if (vThumbHeight < vThumbMinHeight) {
+		let expand = (vThumbMinHeight - vThumbHeight) / parsed.height * parsed.pageHeight / 2;
+		vThumbStart -= expand;
+		vThumbEnd   += expand;
 	}
+	parsed.vThumbStart  = vThumbStart / parsed.pageHeight * parsed.height;
+	parsed.vThumbEnd    = vThumbEnd / parsed.pageHeight * parsed.height;
+	parsed.vThumbHeight = parsed.vThumbEnd - parsed.vThumbStart;
+	parsed.vThumbWidth  = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.vThumbWidth);
+
+	var hThumbStart    = parsed.scrollX - expandedArea;
+	var hThumbEnd      = parsed.scrollX + parsed.width + expandedArea;
+	var hThumbWidth    = (hThumbEnd - hThumbStart) / parsed.pageWidth * parsed.width;
+	var hThumbMinWidth = myPrefs.hThumbMinWidth;
+	if (hThumbWidth < hThumbMinWidth) {
+		let expand = (hThumbMinWidth - hThumbWidth) / parsed.width * parsed.pageWidth / 2;
+		hThumbStart -= expand;
+		hThumbEnd   += expand;
+	}
+	parsed.hThumbStart  = hThumbStart / parsed.pageWidth * parsed.width;
+	parsed.hThumbEnd    = hThumbEnd / parsed.pageWidth * parsed.width;
+	parsed.hThumbWidth  = parsed.hThumbEnd - parsed.hThumbStart;
+	parsed.hThumbHeight = Math.min(viewport.height * MAX_SCROLLBAR_SIZE, myPrefs.hThumbHeight);
 
 	if (myPrefs.debug && aEvent.type != 'touchmove')
 		chrome.NativeWindow.toast.show(aEvent.type+'\n'+
@@ -167,19 +162,17 @@ function handleTouchStart(aEvent) {
 	scrollHorizontally = false;
 	scrollVertically = false;
 	startTime = Date.now();
-	if (myPrefs.thumbEnabled) {
-		state = STATE_DETECTED;
-		if (parsed.canScrollVertically) {
-			scrollVertically = parsed.onVerticalThumb;
-			showVerticalThumb(content, parsed, 0.5);
-		}
-		if (parsed.canScrollHorizontally) {
-			scrollHorizontally = parsed.onHorizontalThumb;
-			showHorizontalThumb(content, parsed, 0.5);
-		}
-		if (!scrollHorizontally && !scrollVertically)
-			return;
+	state = STATE_DETECTED;
+	if (parsed.canScrollVertically) {
+		scrollVertically = parsed.onVerticalThumb;
+		showVerticalThumb(content, parsed, 0.5);
 	}
+	if (parsed.canScrollHorizontally) {
+		scrollHorizontally = parsed.onHorizontalThumb;
+		showHorizontalThumb(content, parsed, 0.5);
+	}
+	if (!scrollHorizontally && !scrollVertically)
+		return;
 	state = STATE_READY;
 }
 
@@ -208,13 +201,6 @@ function handleTouchMove(aEvent) {
 	}
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (state != STATE_HANDLING) {
-		if (!myPrefs.thumbEnabled && !tryActivateScrollbar(parsed)) {
-			if (scrollHorizontally)
-				showHorizontalThumb(content, parsed, 0.5);
-			if (scrollVertically)
-				showVerticalThumb(content, parsed, 0.5);
-			return;
-		}
 		state = STATE_HANDLING;
 		cancelClearThumbs(chrome);
 	}
@@ -226,17 +212,6 @@ function handleTouchMove(aEvent) {
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
-}
-
-function tryActivateScrollbar(aParsedTouch) {
-	if (Date.now() - startTime < myPrefs.startDelay)
-		return false;
-	var threshold = myPrefs.startThreshold;
-	scrollHorizontally = scrollHorizontally && aParsedTouch.canScrollHorizontally && Math.abs(aParsedTouch.eventX - startX) >= threshold;
-	scrollVertically = scrollVertically && aParsedTouch.canScrollVertically && Math.abs(aParsedTouch.eventY - startY) >= threshold;
-	if (!scrollHorizontally && !scrollVertically)
-		return false;
-	return true;
 }
 
 function handleScrollEvent(aEvent) {
@@ -277,8 +252,6 @@ var horizontalThumbs = new WeakMap();
 var verticalThumbs = new WeakMap();
 
 function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
-	if (!myPrefs.thumbEnabled)
-		return null;
 	var thumb = horizontalThumbs.get(aWindow);
 	if (!thumb) {
 		thumb = createThumb(aWindow);
@@ -306,8 +279,6 @@ function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 }
 
 function showVerticalThumb(aWindow, aParsedTouch, aOpacity) {
-	if (!myPrefs.thumbEnabled)
-		return null;
 	var thumb = verticalThumbs.get(aWindow);
 	if (!thumb) {
 		thumb = createThumb(aWindow);
