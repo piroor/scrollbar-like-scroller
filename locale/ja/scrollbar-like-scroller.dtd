@@ -3,6 +3,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 <!ENTITY config.areaSize.title        "画面端で反応する領域の大きさ">
 <!ENTITY config.areaSize.description  "警告：大きすぎる値を設定すると通常のスクロール操作を行えなく恐れがありますので、注意して設定して下さい！">
+<!ENTITY config.areaSize.left.label   "左端">
 <!ENTITY config.areaSize.right.label  "右端">
 <!ENTITY config.areaSize.bottom.label "下端">
 

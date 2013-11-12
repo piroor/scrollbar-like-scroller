@@ -7,6 +7,7 @@ load('lib/prefs');
 
 var myPrefs = prefs.createStore('extensions.scrollbar-like-scroller@piro.sakura.ne.jp.');
 myPrefs.define('debug',          false);
+myPrefs.define('areaSizeLeft',   64, 'areaSize.left');
 myPrefs.define('areaSizeRight',  64, 'areaSize.right');
 myPrefs.define('areaSizeBottom', 64, 'areaSize.buttom');
 myPrefs.define('startThreshold', 12);
@@ -38,6 +39,7 @@ function parseTouchEvent(aEvent) {
 	var [chrome, content, parsed] = parseClientEvent(aEvent);
 	parsed.eventX = touch.clientX * parsed.zoom;
 	parsed.eventY = touch.clientY * parsed.zoom;
+	parsed.leftEdgeTouching = parsed.canScrollVertically && parsed.eventX <= parsed.leftArea;
 	parsed.rightEdgeTouching = parsed.canScrollVertically && parsed.width - parsed.eventX <= parsed.rightArea;
 	parsed.bottomEdgeTouching = parsed.canScrollHorizontally && parsed.height - parsed.eventY <= parsed.bottomArea;
 
@@ -61,6 +63,7 @@ function parseClientEvent(aEvent) {
 		scrollMaxX : (viewport.pageRight - viewport.width) / viewport.zoom,
 		scrollMaxY : (viewport.pageBottom - viewport.height) / viewport.zoom
 	};
+	parsed.leftArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeLeft);
 	parsed.rightArea = Math.min(viewport.width * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeRight);
 	parsed.bottomArea = Math.min(viewport.height * MAX_SCROLLBAR_SIZE, myPrefs.areaSizeBottom);
 	parsed.canScrollHorizontally = parsed.scrollMaxX / viewport.zoom / viewport.width > MIN_SCROLLABLE_SIZE;
@@ -144,7 +147,9 @@ function handleTouchStart(aEvent) {
 	if (aEvent.touches.length != 1)
 		return;
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
-	if (!parsed.rightEdgeTouching && !parsed.bottomEdgeTouching)
+	if (!parsed.leftEdgeTouching &&
+		!parsed.rightEdgeTouching &&
+		!parsed.bottomEdgeTouching)
 		return;
 	scrollHorizontally = false;
 	scrollVertically = false;
@@ -153,7 +158,7 @@ function handleTouchStart(aEvent) {
 	startTime = Date.now();
 	if (myPrefs.thumbEnabled) {
 		state = STATE_DETECTED;
-		if (parsed.rightEdgeTouching) {
+		if (parsed.leftEdgeTouching || parsed.rightEdgeTouching) {
 			scrollVertically = parsed.eventY >= parsed.vThumbStart && parsed.eventY <= parsed.vThumbEnd;
 			showVerticalThumb(content, parsed, 0.5);
 		}
@@ -224,7 +229,7 @@ function tryActivateScrollbar(aParsedTouch) {
 		return false;
 	var threshold = myPrefs.startThreshold;
 	scrollHorizontally = scrollHorizontally && aParsedTouch.bottomEdgeTouching && Math.abs(aParsedTouch.eventX - startX) >= threshold;
-	scrollVertically = scrollVertically && aParsedTouch.rightEdgeTouching && Math.abs(aParsedTouch.eventY - startY) >= threshold;
+	scrollVertically = scrollVertically && (aParsedTouch.leftEdgeTouching || aParsedTouch.rightEdgeTouching) && Math.abs(aParsedTouch.eventY - startY) >= threshold;
 	if (!scrollHorizontally && !scrollVertically)
 		return false;
 	return true;

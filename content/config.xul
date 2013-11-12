@@ -11,6 +11,9 @@
 	<setting type="control"
 		title="&config.areaSize.title;"
 		desc="&config.areaSize.description;"/>
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.left"
+		type="integer"
+		title="&config.areaSize.left.label;"/>
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.areaSize.right"
 		type="integer"
 		title="&config.areaSize.right.label;"/>

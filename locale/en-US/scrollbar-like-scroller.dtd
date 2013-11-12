@@ -3,6 +3,7 @@
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
 <!ENTITY config.areaSize.title        "Sensitive area on viewport edges">
 <!ENTITY config.areaSize.description  "CAUTION: Be careful! Too large value will break regular scroll behavior.">
+<!ENTITY config.areaSize.left.label   "Left">
 <!ENTITY config.areaSize.right.label  "Right">
 <!ENTITY config.areaSize.bottom.label "Bottom">
 
