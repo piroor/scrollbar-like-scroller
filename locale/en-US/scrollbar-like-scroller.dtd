@@ -8,4 +8,9 @@
 <!ENTITY config.areaSize.top.label    "Top">
 <!ENTITY config.areaSize.bottom.label "Bottom">
 
+<!ENTITY config.startThreshold.title       "Threshold to ignore operations on the thumb">
+<!ENTITY config.startThreshold.description "When you end touch action on the thumb quicker or shorter than following threshold, it is detected as a regular &quot;swipe&quot; action.">
+<!ENTITY config.startDelay.label              "Time (msec)">
+<!ENTITY config.startThreshold.label          "Distance">
+
 <!ENTITY config.debug.label "Debug mode">

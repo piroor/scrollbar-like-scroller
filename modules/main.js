@@ -11,6 +11,8 @@ myPrefs.define('areaSizeLeft',   64, 'areaSize.left');
 myPrefs.define('areaSizeRight',  64, 'areaSize.right');
 myPrefs.define('areaSizeTop',    64, 'areaSize.top');
 myPrefs.define('areaSizeBottom', 64, 'areaSize.buttom');
+myPrefs.define('startThreshold', 12);
+myPrefs.define('startDelay',     150);
 myPrefs.define('offsetX',        '0.05', 'offset.x');
 myPrefs.define('offsetMinX',     64,     'offset.minX');
 myPrefs.define('offsetY',        '0.05', 'offset.y');
@@ -206,6 +208,13 @@ function handleTouchMove(aEvent) {
 	}
 	var [chrome, content, parsed] = parseTouchEvent(aEvent);
 	if (state != STATE_HANDLING) {
+		if (!tryActivateScrollbar(parsed)) {
+			if (scrollHorizontally)
+				showHorizontalThumb(content, parsed, 0.5);
+			if (scrollVertically)
+				showVerticalThumb(content, parsed, 0.5);
+			return;
+		}
 		state = STATE_HANDLING;
 		cancelClearThumbs(chrome);
 	}
@@ -223,6 +232,15 @@ function handleTouchMove(aEvent) {
 	aEvent.stopPropagation();
 	aEvent.preventDefault();
 	chrome.sendMessageToJava({ gecko: { type : 'Panning:Override' } });
+}
+
+function tryActivateScrollbar(aParsedTouch) {
+	if (Date.now() - startTime < myPrefs.startDelay)
+		return false;
+	var threshold = myPrefs.startThreshold;
+	scrollHorizontally = scrollHorizontally && aParsedTouch.onHorizontalThumb && Math.abs(aParsedTouch.eventX - startX) >= threshold;
+	scrollVertically = scrollVertically && aParsedTouch.onVerticalThumb && Math.abs(aParsedTouch.eventY - startY) >= threshold;
+	return scrollHorizontally || scrollVertically;
 }
 
 function handleScrollEvent(aEvent) {
