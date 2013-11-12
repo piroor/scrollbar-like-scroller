@@ -26,7 +26,7 @@ Cu.import('resource://gre/modules/Services.jsm');
 const TYPE_BROWSER = 'navigator:browser';
 
 const MIN_SCROLLABLE_SIZE = 0.1;
-const MAX_SCROLLBAR_SIZE = 0.3;
+const MAX_SCROLLBAR_SIZE  = 0.3;
 
 const THUMB_BORDER_WIDTH  = 4;
 const THUMB_BORDER_RADIUS = 8;
@@ -35,6 +35,9 @@ const STATE_NONE     = 0;
 const STATE_DETECTED = 1;
 const STATE_READY    = 2;
 const STATE_HANDLING = 3;
+
+const AXIS_VERTICALLY   = 1;
+const AXIS_HORIZONTALLY = 2;
 
 function parseTouchEvent(aEvent) {
 	var touch = aEvent.touches[0];
@@ -254,7 +257,7 @@ var verticalThumbs = new WeakMap();
 function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 	var thumb = horizontalThumbs.get(aWindow);
 	if (!thumb) {
-		thumb = createThumb(aWindow);
+		thumb = createThumb(aWindow, AXIS_HORIZONTALLY);
 		horizontalThumbs.set(aWindow, thumb);
 	}
 	updateThumbAppearance({
@@ -281,7 +284,7 @@ function showHorizontalThumb(aWindow, aParsedTouch, aOpacity) {
 function showVerticalThumb(aWindow, aParsedTouch, aOpacity) {
 	var thumb = verticalThumbs.get(aWindow);
 	if (!thumb) {
-		thumb = createThumb(aWindow);
+		thumb = createThumb(aWindow, AXIS_VERTICALLY);
 		verticalThumbs.set(aWindow, thumb);
 	}
 	updateThumbAppearance({
@@ -322,23 +325,27 @@ function hideThumb(aWindow, aThumbs) {
 	}
 }
 
-function createThumb(aWindow) {
+function createThumb(aWindow, aAxis) {
 	var thumb = aWindow.document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
 	aWindow.document.documentElement.appendChild(thumb);
 	var style = thumb.style;
 	style.display      = 'none';
 	style.zIndex       = 65000;
+	style.opacity      = 0;
 	style.background   = 'rgba(0, 0, 0, 0.5)';
 	style.border       = THUMB_BORDER_WIDTH + 'px solid rgba(255, 255, 255, 0.75)';
 	style.borderRadius = style.MozBorderRadius = THUMB_BORDER_RADIUS + 'px';
 	style.position     = 'fixed';
-	style.transition   = style.MozTransition = [
-		'top 0.2s linier',
-		'left 0.2s linier',
-		'right 0.2s linier',
-		'bottom 0.2s linier',
-		'opacity 0.2s ease'
-	].join('\n');
+	var transitions = ['opacity 0.2s ease'];
+	if (aAxis == AXIS_VERTICALLY) {
+		transitions.push('top 0.2s linier');
+		transitions.push('bottom 0.2s linier');
+	}
+	else {
+		transitions.push('left 0.2s linier');
+		transitions.push('right 0.2s linier');
+	}
+	style.transition   = style.MozTransition = transitions.join(',');
 	style.margin = 'auto';
 	return thumb;
 }
