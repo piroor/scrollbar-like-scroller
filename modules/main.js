@@ -385,7 +385,11 @@ function createThumb(aWindow, aAxis) {
 	style.display      = 'none';
 	style.zIndex       = 65000;
 	style.opacity      = 0;
-	style.background   = 'rgba(0, 0, 0, 0.5)';
+	style.background   = 'linear-gradient(135deg, ' + [
+	                       'rgba(0, 0, 0, 0.5) 0%',
+	                       'rgba(40, 52, 59, 0.5) 50%',
+	                       'rgba(0, 0, 0, 0.5) 100%'
+	                     ].join(',') + ')';
 	style.border       = THUMB_BORDER_WIDTH + 'px solid rgba(255, 255, 255, 0.75)';
 	style.borderRadius = style.MozBorderRadius = THUMB_BORDER_RADIUS + 'px';
 	style.position     = 'fixed';
