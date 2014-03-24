@@ -1,6 +1,7 @@
 # History
 
  - master/HEAD
+   * Works on Firefox 29 and later
  - 1.1 (2013.11.13)
    * Re-introduce threshold to start scrollbars.
    * Apply better appearance and animation effects for thumbs.
