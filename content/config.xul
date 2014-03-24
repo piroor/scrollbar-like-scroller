@@ -20,6 +20,16 @@
 		type="integer"
 		title="&config.areaSize.bottom.label;"/>
 
+	<setting type="control"
+		title="&config.startThreshold.title;"
+		desc="&config.startThreshold.description;"/>
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.startDelay"
+		type="integer"
+		title="&config.startDelay.label;"/>
+	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.startThreshold"
+		type="integer"
+		title="&config.startThreshold.label;"/>
+
 	<setting pref="extensions.scrollbar-like-scroller@piro.sakura.ne.jp.debug"
 		type="bool"
 		title="&config.debug.label;"/>

@@ -1,6 +1,9 @@
 # History
 
  - master/HEAD
+ - 1.1 (2013.11.13)
+   * Re-introduce threshold to start scrollbars.
+   * Apply better appearance and animation effects for thumbs.
  - 1.0 (2013.11.12)
    * Works with virtual thumb.
    * Supports virtual scrollbars on top and left edges.
